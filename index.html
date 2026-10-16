@@ -1,0 +1,1542 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tracker Kerjaan — Razan</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%230B3A53'/%3E%3Cstop offset='.55' stop-color='%230E7FA0'/%3E%3Cstop offset='1' stop-color='%2306B6D4'/%3E%3C/linearGradient%3E%3CclipPath id='c'%3E%3Crect width='64' height='64' rx='18'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='64' height='64' fill='url(%23g)'/%3E%3Cpath d='M-2 46 C10 39 20 52 32 45 S52 38 66 44 V70 H-2Z' fill='%23fff' fill-opacity='.22'/%3E%3Cpath d='M-2 53 C12 47 22 58 34 52 S54 47 66 52 V70 H-2Z' fill='%23fff' fill-opacity='.18'/%3E%3C/g%3E%3Cpath d='M19 30 L28 39 L45 21' fill='none' stroke='%23fff' stroke-width='6.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='49' cy='13' r='3' fill='%23A5F3FC'/%3E%3C/svg%3E" />
+<meta name="theme-color" content="#0B3A53" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://script.google.com" />
+<link rel="preconnect" href="https://script.googleusercontent.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #F2F9FC;
+    --surface: #FFFFFF;
+    --surface-2: #F6FBFD;
+    --line: #DCEEF6;
+    --ink: #0B2B3C;
+    --ink-2: #3D5B6B;
+    --muted: #7B97A6;
+    --sea: #0891B2;
+    --sea-2: #06B6D4;
+    --sea-soft: #E0F5FB;
+    --deep: #0B3A53;
+    --ok: #10B981;
+    --ok-soft: #DDF6EC;
+    --wait: #F59E0B;
+    --wait-soft: #FEF2D8;
+    --hot: #EF4444;
+    --hot-soft: #FDE5E5;
+    --radius: 20px;
+    --shadow: 0 1px 2px rgba(11,58,83,.04), 0 8px 24px rgba(8,145,178,.07);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Plus Jakarta Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  button { font-family: inherit; cursor: pointer; }
+  input, select, textarea { font-family: inherit; }
+  .hidden { display: none !important; }
+
+  /* ── Hero ── */
+  .hero {
+    position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #0B3A53 0%, #0E6E8C 45%, #06B6D4 100%);
+    color: #fff; padding: 28px 0 92px;
+  }
+  .hero::before, .hero::after {
+    content: ''; position: absolute; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(255,255,255,.18), rgba(255,255,255,0) 70%);
+  }
+  .hero::before { width: 420px; height: 420px; right: -120px; top: -180px; }
+  .hero::after { width: 260px; height: 260px; left: -80px; bottom: -140px; }
+  .hero-wave { position: absolute; left: 0; bottom: -1px; width: 100%; height: 48px; display: block; }
+  .btn.btn-icon { padding: 0; width: 42px; height: 42px; justify-content: center; flex: none; }
+  .btn.btn-icon svg { flex: none; width: 18px; height: 18px; }
+  .sync-pill { display: inline-block; margin-left: 10px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,.18); opacity: 0; transform: translateY(2px); transition: opacity .2s, transform .2s; vertical-align: middle; }
+  .sync-pill.on { opacity: 1; transform: none; }
+  .hero-inner { position: relative; max-width: 1040px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 16px; }
+  .brand-logo { width: 64px; height: 64px; flex: none; border-radius: 18px; box-shadow: 0 10px 26px rgba(0,0,0,.22), 0 0 0 3px rgba(255,255,255,.22); }
+  .login-logo { width: 72px; height: 72px; display: block; margin: 0 auto 14px; border-radius: 20px; box-shadow: 0 12px 28px rgba(11,58,83,.28); }
+  .greet { font-size: 13px; font-weight: 600; letter-spacing: .3px; opacity: .8; }
+  .hero h1 { margin: 4px 0 2px; font-size: 28px; font-weight: 800; letter-spacing: -.4px; }
+  .hero-sub { font-size: 13.5px; opacity: .85; }
+  .hero-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn { border: none; border-radius: 999px; padding: 11px 18px; font-size: 13.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: transform .12s, box-shadow .12s, background .12s; }
+  .btn:active { transform: scale(.97); }
+  .btn-white { background: #fff; color: var(--deep); box-shadow: 0 6px 18px rgba(0,0,0,.15); }
+  .btn-glass { background: rgba(255,255,255,.14); color: #fff; border: 1px solid rgba(255,255,255,.3); backdrop-filter: blur(6px); }
+  .btn-sea { background: var(--sea); color: #fff; box-shadow: 0 6px 16px rgba(8,145,178,.25); }
+  .btn-sea:hover { background: #0782A0; }
+  .btn-soft { background: var(--sea-soft); color: var(--sea); }
+  .btn-ghost { background: transparent; color: var(--ink-2); border: 1px solid var(--line); }
+  .btn-danger { background: var(--hot); color: #fff; }
+  .btn-sm { padding: 7px 13px; font-size: 12.5px; }
+
+  .wrap { max-width: 1040px; margin: -64px auto 0; padding: 0 20px 64px; position: relative; }
+
+  /* ── Stats ── */
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+  .stat {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px 16px 14px; box-shadow: var(--shadow); cursor: pointer; text-align: left;
+    position: relative; overflow: hidden; transition: transform .15s, box-shadow .15s;
+  }
+  .stat:hover { transform: translateY(-2px); }
+  .stat.active { box-shadow: 0 0 0 2px var(--c) inset, var(--shadow); }
+  .stat-icon { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; font-size: 16px; background: var(--cs); margin-bottom: 10px; }
+  .stat-val { font-size: 30px; font-weight: 800; line-height: 1; color: var(--c); letter-spacing: -.5px; }
+  .stat-lbl { font-size: 12.5px; color: var(--muted); font-weight: 600; margin-top: 6px; }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px; margin-bottom: 16px; }
+  .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .card-title { font-size: 15px; font-weight: 800; margin: 0; }
+  .month-nav { display: flex; align-items: center; gap: 6px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 4px; }
+  .month-nav button { width: 28px; height: 28px; border-radius: 50%; border: none; background: #fff; color: var(--ink-2); font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+  .month-nav span { font-size: 12.5px; font-weight: 700; min-width: 112px; text-align: center; }
+  .chart-box { position: relative; height: 210px; }
+
+  /* ── Tabs ── */
+  .tabs { display: flex; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px; margin-bottom: 14px; box-shadow: var(--shadow); overflow-x: auto; }
+  .tab { flex: 1; border: none; background: transparent; border-radius: 999px; padding: 10px 14px; font-size: 13.5px; font-weight: 700; color: var(--muted); white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+  .tab.active { background: var(--deep); color: #fff; }
+  .tab .count { font-size: 11px; background: rgba(123,151,166,.18); padding: 2px 7px; border-radius: 999px; }
+  .tab.active .count { background: rgba(255,255,255,.2); }
+
+  /* ── Toolbar ── */
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  .search { flex: 1 1 220px; display: flex; align-items: center; gap: 8px; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 10px 14px; }
+  .search input { border: none; outline: none; background: transparent; font-size: 13.5px; width: 100%; color: var(--ink); }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip { border: 1px solid var(--line); background: #fff; color: var(--ink-2); border-radius: 999px; padding: 8px 13px; font-size: 12.5px; font-weight: 700; }
+  .chip.active { background: var(--sea); border-color: var(--sea); color: #fff; }
+  .select { border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 999px; padding: 9px 14px; font-size: 13px; font-weight: 600; }
+
+  /* ── Job card ── */
+  .list { display: flex; flex-direction: column; gap: 10px; }
+  .job { display: flex; gap: 12px; align-items: flex-start; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 14px 14px 14px 12px; position: relative; transition: box-shadow .15s; }
+  .job:hover { box-shadow: var(--shadow); }
+  .job::before { content: ''; position: absolute; left: 0; top: 14px; bottom: 14px; width: 4px; border-radius: 0 4px 4px 0; background: var(--wait); }
+  .job.done::before { background: var(--ok); }
+  .job.stuck::before { background: var(--hot); }
+  .check { flex: none; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--wait); background: #fff; display: grid; place-items: center; margin-top: 1px; color: #fff; font-size: 14px; font-weight: 800; transition: all .15s; }
+  .check:hover { background: var(--wait-soft); }
+  .job.done .check { background: var(--ok); border-color: var(--ok); }
+  .job-main { flex: 1; min-width: 0; }
+  .job-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .job-name { font-size: 15px; font-weight: 800; color: var(--ink); background: none; border: none; padding: 0; text-align: left; }
+  .job-name:hover { color: var(--sea); text-decoration: underline; text-underline-offset: 3px; }
+  .badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .meta { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 5px; font-size: 12px; color: var(--muted); font-weight: 500; }
+  .meta b { color: var(--ink-2); font-weight: 700; }
+  .note { margin-top: 7px; font-size: 12.5px; color: var(--ink-2); background: var(--surface-2); border-radius: 10px; padding: 7px 10px; white-space: pre-wrap; }
+  .creds { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; }
+  .cred { display: flex; align-items: center; gap: 6px; min-width: 0; }
+  .cred-text { font-size: 12px; background: var(--surface-2); border: 1px dashed var(--line); border-radius: 9px; padding: 4px 9px; color: var(--ink-2); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cred .ibtn { flex: none; }
+  .cred-text b { color: var(--sea); font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; margin-right: 4px; }
+  .ibtn { width: 28px; height: 28px; border-radius: 9px; border: 1px solid var(--line); background: #fff; color: var(--ink-2); display: inline-grid; place-items: center; font-size: 13px; flex: none; }
+  .ibtn:hover { background: var(--sea-soft); color: var(--sea); }
+  .job-actions { display: flex; flex-direction: column; gap: 6px; }
+
+  .empty { text-align: center; padding: 36px 10px; color: var(--muted); font-size: 13.5px; }
+  .empty-emoji { font-size: 34px; display: block; margin-bottom: 6px; }
+
+  .skeleton { height: 86px; border-radius: 18px; background: linear-gradient(90deg, #EAF5FA 25%, #F6FBFD 50%, #EAF5FA 75%); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+  @keyframes shimmer { to { background-position: -200% 0; } }
+
+  /* ── Client & note cards ── */
+  .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .tile { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 14px; text-align: left; transition: box-shadow .15s, transform .15s; }
+  .tile:hover { box-shadow: var(--shadow); transform: translateY(-1px); }
+  .tile-title { font-size: 14.5px; font-weight: 800; margin: 0 0 4px; color: var(--ink); }
+  .tile-sub { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .tile-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 8px; }
+  .note-body { font-size: 13px; color: var(--ink-2); white-space: pre-wrap; margin-top: 6px; line-height: 1.5; }
+
+  /* ── Modal ── */
+  .overlay { position: fixed; inset: 0; background: rgba(11,43,60,.45); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 50; animation: fade .15s; }
+  @keyframes fade { from { opacity: 0; } }
+  .modal { background: #fff; border-radius: 24px; width: 100%; max-width: 520px; max-height: 88vh; overflow-y: auto; padding: 22px; box-shadow: 0 24px 60px rgba(11,43,60,.3); animation: pop .18s ease-out; }
+  @keyframes pop { from { transform: translateY(12px) scale(.98); opacity: 0; } }
+  .modal-sm { max-width: 400px; }
+  .modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+  .modal-head h2 { margin: 0; font-size: 18px; font-weight: 800; }
+  .modal-head p { margin: 4px 0 0; font-size: 13px; color: var(--muted); }
+  .close { width: 34px; height: 34px; border-radius: 50%; border: none; background: var(--surface-2); color: var(--ink-2); font-size: 16px; flex: none; }
+  .form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .field { display: flex; flex-direction: column; gap: 6px; font-size: 12px; font-weight: 700; color: var(--ink-2); }
+  .field input, .field select, .field textarea { border: 1.5px solid var(--line); background: var(--surface-2); color: var(--ink); border-radius: 12px; padding: 11px 12px; font-size: 13.5px; font-weight: 500; outline: none; transition: border-color .12s, background .12s; }
+  .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--sea-2); background: #fff; }
+  .field textarea { resize: vertical; min-height: 72px; }
+  .full { grid-column: 1 / -1; }
+  .section-label { grid-column: 1 / -1; font-size: 11.5px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--sea); margin-top: 6px; display: flex; align-items: center; gap: 8px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+  .modal-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+  .warn { grid-column: 1 / -1; background: var(--wait-soft); color: #9A5B00; font-size: 12.5px; padding: 10px 12px; border-radius: 12px; line-height: 1.5; }
+
+  .out-block { margin-top: 16px; }
+  .out-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .out-head span { font-size: 13px; font-weight: 800; }
+  .out { width: 100%; border: 1.5px solid var(--line); background: var(--surface-2); border-radius: 12px; padding: 11px 12px; font-size: 12.5px; color: var(--ink); resize: vertical; }
+  textarea.out { min-height: 210px; }
+
+  .timeline { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+  .tl { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: 14px; background: var(--surface-2); }
+  .tl-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 5px; flex: none; }
+
+  .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--deep); color: #fff; padding: 11px 18px; border-radius: 999px; font-size: 13px; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,.25); z-index: 80; max-width: calc(100% - 32px); text-align: center; }
+
+  .login { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: linear-gradient(160deg, #0B3A53 0%, #0E6E8C 50%, #06B6D4 100%); }
+  .login-card { width: 100%; max-width: 380px; background: #fff; border-radius: 26px; padding: 28px 24px; text-align: center; box-shadow: 0 30px 70px rgba(0,0,0,.3); }
+  .login-badge { width: 60px; height: 60px; margin: 0 auto 12px; border-radius: 20px; background: var(--sea-soft); display: grid; place-items: center; font-size: 30px; }
+  .login-card h2 { margin: 0 0 6px; font-size: 21px; font-weight: 800; }
+  .login-card p { margin: 0 0 18px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .login-err { color: var(--hot) !important; font-weight: 600; margin: 10px 0 0 !important; text-align: left; }
+  .boot { min-height: 100vh; display: grid; place-items: center; color: var(--muted); font-weight: 600; }
+
+  @media (max-width: 760px) {
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .grid2 { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 560px) {
+    .hero { padding: 22px 0 84px; }
+    .hero-inner { padding: 0 14px; }
+    .hero h1 { font-size: 23px; }
+    .brand { gap: 12px; }
+    .brand-logo { width: 50px; height: 50px; border-radius: 15px; }
+    .hero-actions { width: 100%; }
+    .hero-actions .btn { flex: 1; justify-content: center; }
+    .hero-actions .btn-icon { flex: none; }
+    .wrap { padding: 0 14px 56px; }
+    .stat { padding: 13px; }
+    .stat-val { font-size: 25px; }
+    .card { padding: 14px; }
+    .chart-box { height: 180px; }
+    .form { grid-template-columns: 1fr; }
+    .modal { padding: 18px; border-radius: 20px; }
+    .modal-foot .btn { flex: 1; justify-content: center; }
+    .job { padding: 12px 10px; }
+    .job-name { font-size: 14px; }
+    .tab { padding: 9px 6px; font-size: 12.5px; gap: 4px; }
+    .tab .ti { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0B3A53"/>
+      <stop offset=".55" stop-color="#0E7FA0"/>
+      <stop offset="1" stop-color="#06B6D4"/>
+    </linearGradient>
+    <clipPath id="logoClip"><rect width="64" height="64" rx="18"/></clipPath>
+    <symbol id="logoMark" viewBox="0 0 64 64">
+      <g clip-path="url(#logoClip)">
+        <rect width="64" height="64" fill="url(#logoGrad)"/>
+        <path d="M-2 46 C10 39 20 52 32 45 S52 38 66 44 V70 H-2Z" fill="#fff" fill-opacity=".22"/>
+        <path d="M-2 53 C12 47 22 58 34 52 S54 47 66 52 V70 H-2Z" fill="#fff" fill-opacity=".18"/>
+      </g>
+      <path d="M19 30 L28 39 L45 21" fill="none" stroke="#fff" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="49" cy="13" r="3" fill="#A5F3FC"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div id="loginScreen" class="login hidden">
+  <form class="login-card" onsubmit="event.preventDefault(); doLogin();">
+    <svg class="login-logo" aria-label="Logo Tracker Kerjaan"><use href="#logoMark"/></svg>
+    <h2>Tracker Kerjaan</h2>
+    <p>Masukin password sekali aja. Perangkat ini bakal diingat, jadi lain kali langsung kebuka.</p>
+    <label class="field" style="text-align:left;">Password
+      <input id="loginPass" type="password" autocomplete="current-password" placeholder="••••••••" />
+    </label>
+    <p id="loginErr" class="login-err hidden"></p>
+    <button class="btn btn-sea" id="loginBtn" type="submit" style="width:100%; justify-content:center; margin-top:14px;">Masuk</button>
+  </form>
+</div>
+
+<div id="appRoot" class="hidden">
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="brand">
+        <svg class="brand-logo" aria-label="Logo Tracker Kerjaan"><use href="#logoMark"/></svg>
+        <div>
+          <div class="greet" id="greet">Selamat datang</div>
+          <h1>Razan Ahmad Zharfan</h1>
+          <div class="hero-sub"><span id="todayLabel"></span><span id="syncPill" class="sync-pill">Menyinkronkan…</span></div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn btn-glass" onclick="openPelunasan()">💌 Pelunasan</button>
+        <button class="btn btn-white" onclick="openJobForm()">＋ Kerjaan baru</button>
+        <button class="btn btn-glass btn-icon" onclick="doLogout()" title="Keluar dari perangkat ini" aria-label="Keluar">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <svg class="hero-wave" viewBox="0 0 1440 48" preserveAspectRatio="none" aria-hidden="true">
+      <path fill="#F2F9FC" d="M0,32 C240,0 480,48 720,28 C960,8 1200,44 1440,22 L1440,48 L0,48 Z"></path>
+    </svg>
+  </section>
+
+  <main class="wrap">
+    <div class="stats">
+      <button class="stat" id="stHari" style="--c:var(--ok); --cs:var(--ok-soft);" onclick="setQuick('hariIni')">
+        <div class="stat-icon">✅</div>
+        <div class="stat-val" id="vHari">0</div>
+        <div class="stat-lbl">Selesai hari ini</div>
+      </button>
+      <button class="stat" id="stBulan" style="--c:var(--sea); --cs:var(--sea-soft);" onclick="setQuick('bulan')">
+        <div class="stat-icon">📅</div>
+        <div class="stat-val" id="vBulan">0</div>
+        <div class="stat-lbl" id="lBulan">Selesai bulan ini</div>
+      </button>
+      <button class="stat" id="stProses" style="--c:var(--wait); --cs:var(--wait-soft);" onclick="setQuick('proses')">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-val" id="vProses">0</div>
+        <div class="stat-lbl">Sedang berjalan</div>
+      </button>
+      <button class="stat" id="stStuck" style="--c:var(--hot); --cs:var(--hot-soft);" onclick="setQuick('stuck')">
+        <div class="stat-icon">🚨</div>
+        <div class="stat-val" id="vStuck">0</div>
+        <div class="stat-lbl">Nyangkut ≥ 7 hari</div>
+      </button>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h3 class="card-title">Selesai per jenis layanan</h3>
+        <div class="month-nav">
+          <button onclick="shiftMonth(-1)" aria-label="Bulan sebelumnya">‹</button>
+          <span id="monthLabel"></span>
+          <button onclick="shiftMonth(1)" aria-label="Bulan berikutnya">›</button>
+        </div>
+      </div>
+      <div class="chart-box"><canvas id="chart"></canvas></div>
+    </div>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="kerjaan" onclick="setTab('kerjaan')"><span class="ti">🗂️</span> Kerjaan <span class="count" id="cKerjaan">0</span></button>
+      <button class="tab" data-tab="klien" onclick="setTab('klien')"><span class="ti">🏢</span> Klien <span class="count" id="cKlien">0</span></button>
+      <button class="tab" data-tab="catatan" onclick="setTab('catatan')"><span class="ti">📝</span> Catatan</button>
+      <button class="tab" data-tab="arsip" onclick="setTab('arsip')"><span class="ti">🗃️</span> Arsip</button>
+    </nav>
+
+    <!-- Tab Kerjaan -->
+    <section id="tabKerjaan" class="card">
+      <div class="toolbar">
+        <label class="search"><span>🔍</span><input id="qJobs" placeholder="Cari nama klien atau catatan..." oninput="renderJobs()" /></label>
+        <select class="select" id="fJenisFilter" onchange="renderJobs()"></select>
+      </div>
+      <div class="chips" id="statusChips" style="margin-bottom:14px;">
+        <button class="chip active" data-st="semua" onclick="setStatusChip('semua')">Semua</button>
+        <button class="chip" data-st="proses" onclick="setStatusChip('proses')">Proses</button>
+        <button class="chip" data-st="selesai" onclick="setStatusChip('selesai')">Selesai</button>
+      </div>
+      <div class="list" id="jobList"></div>
+    </section>
+
+    <!-- Tab Klien -->
+    <section id="tabKlien" class="card hidden">
+      <div class="toolbar">
+        <label class="search"><span>🔍</span><input id="qClients" placeholder="Cari klien..." oninput="renderClients()" /></label>
+      </div>
+      <div class="grid2" id="clientList"></div>
+    </section>
+
+    <!-- Tab Catatan -->
+    <section id="tabCatatan" class="card hidden">
+      <div class="toolbar">
+        <label class="search"><span>🔍</span><input id="qNotes" placeholder="Cari catatan..." oninput="renderNotes()" /></label>
+        <button class="btn btn-sea btn-sm" onclick="openNoteForm()">＋ Catatan</button>
+      </div>
+      <div class="grid2" id="noteList"></div>
+    </section>
+
+    <!-- Tab Arsip -->
+    <section id="tabArsip" class="card hidden">
+      <p style="margin:0 0 12px; font-size:12.5px; color:var(--muted);">Kerjaan yang dihapus masuk ke sini dulu, jadi masih bisa dipulihkan kalau kepencet.</p>
+      <div class="list" id="archiveList"></div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal: tambah / edit kerjaan -->
+<div id="mJob" class="overlay hidden" onclick="if(event.target===this) closeModal('mJob')">
+  <div class="modal">
+    <div class="modal-head">
+      <div><h2 id="jobFormTitle">Kerjaan baru</h2><p id="jobFormSub">Isi seperlunya, sisanya bisa dilengkapi nanti.</p></div>
+      <button class="close" onclick="closeModal('mJob')">✕</button>
+    </div>
+    <div class="form">
+      <label class="field" id="wrapBentuk">Bentuk usaha
+        <select id="fBentuk" onchange="onBentukChange()">
+          <option>PT</option><option>CV</option><option>PT Perorangan</option>
+          <option>Firma</option><option>Yayasan</option><option value="">Tanpa awalan</option><option value="__custom">Lainnya…</option>
+        </select>
+      </label>
+      <label class="field hidden" id="wrapBentukCustom">Sebutkan
+        <input id="fBentukCustom" placeholder="mis. Koperasi, UD" oninput="checkDup()" />
+      </label>
+      <label class="field" id="wrapNamaUsaha">Nama usaha
+        <input id="fNamaUsaha" list="clientNames" placeholder="mis. ABC Sejahtera" oninput="checkDup()" />
+      </label>
+      <label class="field full hidden" id="wrapNama">Nama lengkap
+        <input id="fNama" placeholder="PT ABC Sejahtera" />
+      </label>
+      <datalist id="clientNames"></datalist>
+
+      <label class="field">Jenis layanan
+        <select id="fJenis" onchange="onJenisChange(); checkDup();"></select>
+      </label>
+      <label class="field hidden" id="wrapJenisCustom">Jenis lainnya
+        <input id="fJenisCustom" placeholder="mis. Izin Usaha Khusus" />
+      </label>
+      <label class="field">Dari PIC
+        <select id="fPic"></select>
+      </label>
+      <label class="field">Tanggal masuk
+        <input id="fTanggal" type="date" />
+      </label>
+      <label class="field">Status
+        <select id="fStatus" onchange="onStatusChange()"><option value="proses">Proses</option><option value="selesai">Selesai</option></select>
+      </label>
+      <label class="field hidden" id="wrapTanggalSelesai">Tanggal selesai
+        <input id="fTanggalSelesai" type="date" />
+      </label>
+      <label class="field">Jenis PT
+        <select id="fJenisPt"><option value="">—</option><option>PMDN</option><option>PMA</option></select>
+      </label>
+      <label class="field">Skala
+        <select id="fSkala"><option value="">—</option><option>Mikro</option><option>Kecil</option><option>Menengah</option><option>Besar</option></select>
+      </label>
+      <div id="dupWarn" class="warn hidden"></div>
+
+      <div class="section-label" id="secOss">Akun OSS</div>
+      <label class="field" data-sec="oss">User OSS<input id="fOssUser" autocomplete="off" /></label>
+      <label class="field" data-sec="oss">Password OSS<input id="fOssPass" autocomplete="off" /></label>
+
+      <div class="section-label" id="secCtx">Akun Coretax PIC</div>
+      <label class="field" data-sec="ctx">User Coretax PIC<input id="fCtxUser" autocomplete="off" /></label>
+      <label class="field" data-sec="ctx">Password Coretax PIC<input id="fCtxPass" autocomplete="off" /></label>
+
+      <div class="section-label" id="secAhu">Akun AHU</div>
+      <label class="field" data-sec="ahu">User AHU<input id="fAhuUser" autocomplete="off" /></label>
+      <label class="field" data-sec="ahu">Password AHU<input id="fAhuPass" autocomplete="off" /></label>
+
+      <label class="field full">Catatan (opsional)
+        <textarea id="fNoted" placeholder="mis. nunggu KTP klien"></textarea>
+      </label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mJob')">Batal</button>
+      <button class="btn btn-sea" id="jobFormSubmit" onclick="submitJobForm()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: tanya lanjut tahap -->
+<div id="mAsk" class="overlay hidden" onclick="if(event.target===this) closeModal('mAsk')">
+  <div class="modal modal-sm">
+    <div class="modal-head">
+      <div><h2 id="askTitle">Lanjut?</h2><p id="askSub"></p></div>
+      <button class="close" onclick="closeModal('mAsk')">✕</button>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="answerAsk(false)">Tidak, selesai</button>
+      <button class="btn btn-sea" id="askYes" onclick="answerAsk(true)">Ya, lanjut</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: migrasi + isi akun -->
+<div id="mMigrate" class="overlay hidden" onclick="if(event.target===this) closeModal('mMigrate')">
+  <div class="modal modal-sm">
+    <div class="modal-head">
+      <div><h2 id="migTitle">Lanjut</h2><p id="migSub"></p></div>
+      <button class="close" onclick="closeModal('mMigrate')">✕</button>
+    </div>
+    <div class="form" style="grid-template-columns:1fr;">
+      <label class="field"><span id="migUserLbl">User</span><input id="migUser" autocomplete="off" /></label>
+      <label class="field"><span id="migPassLbl">Password</span><input id="migPass" autocomplete="off" /></label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mMigrate')">Batal</button>
+      <button class="btn btn-sea" id="migBtn" onclick="submitMigrate()">Lanjutkan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: logo -->
+<div id="mLogo" class="overlay hidden" onclick="if(event.target===this) closeModal('mLogo')">
+  <div class="modal modal-sm">
+    <div class="modal-head">
+      <div><h2>🎨 Udah bikin logo?</h2><p id="logoSub"></p></div>
+      <button class="close" onclick="closeModal('mLogo')">✕</button>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="answerLogo('skip')">Gak perlu</button>
+      <button class="btn btn-soft" onclick="answerLogo('belum')">Belum, ingetin</button>
+      <button class="btn btn-sea" onclick="answerLogo('udah')">Udah</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: hapus -->
+<div id="mDelete" class="overlay hidden" onclick="if(event.target===this) closeModal('mDelete')">
+  <div class="modal modal-sm">
+    <div class="modal-head">
+      <div><h2>Hapus kerjaan?</h2><p id="delSub"></p></div>
+      <button class="close" onclick="closeModal('mDelete')">✕</button>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mDelete')">Batal</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Pindahin ke Arsip</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: detail klien -->
+<div id="mClient" class="overlay hidden" onclick="if(event.target===this) closeModal('mClient')">
+  <div class="modal">
+    <div class="modal-head">
+      <div><h2 id="clTitle">Klien</h2><p id="clSub"></p></div>
+      <button class="close" onclick="closeModal('mClient')">✕</button>
+    </div>
+    <div id="clCreds" class="creds" style="margin-top:0;"></div>
+    <div class="section-label" style="margin:16px 0 4px;">Riwayat kerjaan</div>
+    <div id="clTimeline" class="timeline"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="clientNewJob()">＋ Kerjaan buat klien ini</button>
+      <button class="btn btn-sea" onclick="clientPelunasan()">💌 Pelunasan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: pelunasan -->
+<div id="mPel" class="overlay hidden" onclick="if(event.target===this) closeModal('mPel')">
+  <div class="modal" style="max-width:580px;">
+    <div class="modal-head">
+      <div><h2>💌 Pelunasan</h2><p>Akun yang udah pernah diisi bakal ketarik otomatis.</p></div>
+      <button class="close" onclick="closeModal('mPel')">✕</button>
+    </div>
+    <div class="form">
+      <label class="field full">Pilih klien
+        <select id="pNama" onchange="onPelClient()"></select>
+      </label>
+      <label class="field">Email PT<input id="pEmail" autocomplete="off" /></label>
+      <label class="field">Password email (opsional)<input id="pEmailPass" autocomplete="off" /></label>
+      <label class="field">User OSS<input id="pOssUser" autocomplete="off" /></label>
+      <label class="field">Password OSS<input id="pOssPass" autocomplete="off" /></label>
+      <label class="field">User Coretax PT<input id="pCtxUser" autocomplete="off" /></label>
+      <label class="field">Password Coretax PT<input id="pCtxPass" autocomplete="off" /></label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mPel')">Tutup</button>
+      <button class="btn btn-sea" onclick="generatePelunasan()">✨ Generate teks</button>
+    </div>
+
+    <div id="pelOut" class="hidden">
+      <div class="out-block">
+        <div class="out-head"><span>📧 Email — subject</span><button class="ibtn" onclick="copyField('outSubject')" title="Salin">⧉</button></div>
+        <input id="outSubject" class="out mono" readonly />
+      </div>
+      <div class="out-block">
+        <div class="out-head">
+          <span>📧 Email — isi</span>
+          <span style="display:flex; gap:6px;">
+            <button class="btn btn-soft btn-sm" onclick="openGmail()">Buka di Gmail</button>
+            <button class="ibtn" onclick="copyField('outEmail')" title="Salin">⧉</button>
+          </span>
+        </div>
+        <textarea id="outEmail" class="out mono" readonly></textarea>
+      </div>
+      <div class="out-block">
+        <div class="out-head"><span>💬 WhatsApp</span><button class="ibtn" onclick="copyField('outWa')" title="Salin">⧉</button></div>
+        <textarea id="outWa" class="out mono" readonly></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: catatan -->
+<div id="mNote" class="overlay hidden" onclick="if(event.target===this) closeModal('mNote')">
+  <div class="modal">
+    <div class="modal-head">
+      <div><h2 id="noteTitle">Catatan baru</h2><p>NIK notaris, syarat PKP, NPWP virtual office, apa aja.</p></div>
+      <button class="close" onclick="closeModal('mNote')">✕</button>
+    </div>
+    <div class="form" style="grid-template-columns:1fr;">
+      <label class="field">Judul<input id="nJudul" placeholder="mis. NIK Notaris" /></label>
+      <label class="field">Isi<textarea id="nIsi" style="min-height:160px;"></textarea></label>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost hidden" id="noteDel" onclick="deleteNote()" style="margin-right:auto; color:var(--hot);">Hapus</button>
+      <button class="btn btn-ghost" onclick="closeModal('mNote')">Batal</button>
+      <button class="btn btn-sea" onclick="saveNote()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script>
+// ▼▼▼ TEMPEL URL WEB APP APPS SCRIPT KAMU DI SINI (yang berakhiran /exec) ▼▼▼
+const API_URL = 'https://script.google.com/macros/s/AKfycbyQwWKjf-mED9T7o3X3IczAb-J3kQGCwcL8mq-rN0_YjmPrVKRWmdOhj12hC7UBp2wx/exec';
+// ▲▲▲
+
+const JENIS = ['NIB','NPWP','PT Perorangan','PKP','Perubahan Akta','Perubahan NIB','Logo','Lainnya'];
+const JENIS_COLOR = {
+  'NIB':'#0891B2', 'NPWP':'#6366F1', 'PT Perorangan':'#F59E0B', 'PKP':'#EC4899',
+  'Perubahan Akta':'#8B5CF6', 'Perubahan NIB':'#14B8A6', 'Logo':'#22C55E', 'Lainnya':'#94A3B8'
+};
+const JENISPT_COLOR = { 'PMDN':'#2563EB', 'PMA':'#EA580C' };
+const SKALA_COLOR = { 'Mikro':'#16A34A', 'Kecil':'#0891B2', 'Menengah':'#CA8A04', 'Besar':'#DC2626' };
+const PICS = ['Eko (Vorent)','Mayang (Izinin)','Deny (Echoffice)','Yona (Virtual Office)'];
+const STUCK_DAYS = 7;
+const SEC_OSS = ['NIB','Perubahan NIB'];
+const SEC_CTX = ['PKP'];
+const SEC_AHU = ['PT Perorangan','Perubahan Akta'];
+
+let jobs = [];
+let notes = null;
+let archive = null;
+let loaded = false;
+let tab = 'kerjaan';
+let quick = null;
+let statusChip = 'semua';
+let monthCursor = todayStr().slice(0,7);
+let chart = null;
+let shown = {};
+
+// ── Utils ─────────────────────────────────────────────────────────
+function todayStr(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function parseIso(s){
+  const m = String(s||'').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if(m) return new Date(+m[1], +m[2]-1, +m[3]);
+  const m2 = String(s||'').match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if(m2) return new Date(+m2[3], +m2[2]-1, +m2[1]);
+  return null;
+}
+function fmtDate(s){
+  const d = parseIso(s);
+  if(!d) return s ? String(s) : '—';
+  return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' });
+}
+function ageDays(j){
+  const d = parseIso(j.tanggalMasuk);
+  if(!d) return 0;
+  const t = parseIso(todayStr());
+  return Math.max(0, Math.round((t - d) / 86400000));
+}
+function isStuck(j){ return j.status === 'proses' && ageDays(j) >= STUCK_DAYS; }
+function monthKey(s){ const d = parseIso(s); return d ? `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}` : ''; }
+function norm(s){ return String(s||'').toLowerCase().replace(/\s+/g,' ').trim(); }
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+function esc(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function badge(text, color){
+  return `<span class="badge" style="background:${color}1F; color:${color};">${esc(text)}</span>`;
+}
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>t.classList.add('hidden'), 2600);
+}
+function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+function copyText(text){
+  if(navigator.clipboard) navigator.clipboard.writeText(text).catch(()=>{});
+  toast('Disalin ✨');
+}
+function copyField(id){ copyText(document.getElementById(id).value); }
+
+// ── Koneksi ke Apps Script + login sekali per perangkat ──────────
+const TOKEN_KEY = 'tracker_token';
+let memToken = null;
+function getToken(){
+  try { return localStorage.getItem(TOKEN_KEY) || memToken; } catch(e){ return memToken; }
+}
+function setToken(t){
+  memToken = t;
+  try { t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY); } catch(e){}
+}
+
+async function callApi(payload){
+  if(!/^https:\/\/script\.google\.com\//.test(API_URL)){
+    throw new Error('API_URL di index.html belum diisi URL Web App Apps Script.');
+  }
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  const out = await res.json();
+  if(!out.ok){
+    if(out.error === 'AUTH'){ setToken(null); clearLocalCache(); showLogin('Sesi di perangkat ini udah gak berlaku, login lagi ya.'); }
+    throw new Error(out.error || 'Gagal');
+  }
+  return out.data;
+}
+
+// Nama fungsi lama (api_listJobs, dst) dipetakan ke aksi API (listJobs, dst).
+function gsRun(fn, ...args){
+  return callApi({ action: fn.replace(/^api_/, ''), token: getToken(), args });
+}
+
+function deviceName(){
+  const ua = navigator.userAgent;
+  const os = /Android/i.test(ua) ? 'Android' : /iPhone|iPad/i.test(ua) ? 'iPhone/iPad' : /Mac/i.test(ua) ? 'Mac' : /Windows/i.test(ua) ? 'Windows' : 'Perangkat';
+  const br = /Edg\//.test(ua) ? 'Edge' : /Chrome\//.test(ua) ? 'Chrome' : /Safari\//.test(ua) ? 'Safari' : /Firefox\//.test(ua) ? 'Firefox' : 'Browser';
+  return `${os} · ${br}`;
+}
+
+function showLogin(msg){
+  document.getElementById('appRoot').classList.add('hidden');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  const err = document.getElementById('loginErr');
+  err.textContent = msg || '';
+  err.classList.toggle('hidden', !msg);
+  setTimeout(()=>document.getElementById('loginPass').focus(), 60);
+}
+
+async function doLogin(){
+  const pass = document.getElementById('loginPass').value;
+  if(!pass) return;
+  const btn = document.getElementById('loginBtn');
+  btn.disabled = true; btn.textContent = 'Ngecek...';
+  try {
+    const res = await callApi({ action:'login', password: pass, device: deviceName() });
+    setToken(res.token);
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginScreen').classList.add('hidden');
+    load();
+  } catch(e){
+    const m = e.message;
+    showLogin(m==='PASSWORD_SALAH' ? 'Password salah, coba lagi.'
+      : m==='TERKUNCI' ? 'Kebanyakan salah. Login dikunci 15 menit, coba lagi nanti.'
+      : m.includes('Failed to fetch') ? 'Gak bisa nyambung ke server. Cek internet atau API_URL.'
+      : m);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Masuk';
+  }
+}
+
+async function doLogout(){
+  const t = getToken();
+  setToken(null);
+  clearLocalCache();
+  jobs = []; notes = null; archive = null; loaded = false;
+  showLogin('Udah keluar dari perangkat ini.');
+  try { await callApi({ action:'logout', token: t }); } catch(e){}
+}
+
+// ── Cache di perangkat: dashboard langsung tampil pakai data terakhir,
+//    lalu diperbarui diam-diam dari server. Dihapus saat keluar. ─────
+const LOCAL_KEY = 'tracker_cache_v3';
+function readLocalCache(){
+  try { return JSON.parse(localStorage.getItem(LOCAL_KEY) || 'null'); } catch(e){ return null; }
+}
+function writeLocalCache(){
+  try { localStorage.setItem(LOCAL_KEY, JSON.stringify({ jobs, notes, at: Date.now() })); } catch(e){}
+}
+function clearLocalCache(){
+  try { localStorage.removeItem(LOCAL_KEY); } catch(e){}
+}
+
+let syncCount = 0;
+function setSync(delta){
+  syncCount = Math.max(0, syncCount + delta);
+  const el = document.getElementById('syncPill');
+  if(!el) return;
+  el.classList.toggle('on', syncCount > 0);
+}
+
+// ── Load ──────────────────────────────────────────────────────────
+async function load(){
+  if(!getToken()){ showLogin(); return; }
+  document.getElementById('appRoot').classList.remove('hidden');
+  const cached = readLocalCache();
+  if(cached && Array.isArray(cached.jobs)){
+    jobs = cached.jobs;
+    if(Array.isArray(cached.notes)) notes = cached.notes;
+    loaded = true;
+  }
+  const h = new Date().getHours();
+  document.getElementById('greet').textContent =
+    h < 11 ? 'Selamat pagi ☀️' : h < 15 ? 'Selamat siang 🌤️' : h < 18 ? 'Selamat sore 🌇' : 'Selamat malam 🌙';
+  document.getElementById('todayLabel').textContent =
+    new Date().toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  document.getElementById('fJenisFilter').innerHTML =
+    '<option value="semua">Semua jenis</option>' + JENIS.map(j=>`<option>${j}</option>`).join('');
+  document.getElementById('fJenis').innerHTML = JENIS.map(j=>`<option>${j}</option>`).join('');
+  document.getElementById('fPic').innerHTML =
+    '<option value="">— Langsung / tanpa PIC —</option>' + PICS.map(p=>`<option>${esc(p)}</option>`).join('');
+
+  if(loaded) renderAll();
+  else document.getElementById('jobList').innerHTML = '<div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>';
+
+  setSync(1);
+  const mySeq = ++writeSeq;
+  try {
+    const fresh = (await gsRun('api_listJobs')) || [];
+    // Kalau selama nunggu ada perubahan yang dikirim, jangan timpa tampilan dengan data lama.
+    if(mySeq === writeSeq) jobs = fresh;
+    loaded = true;
+    renderAll();
+    writeLocalCache();
+  } catch(e){
+    if(!loaded){ jobs = []; loaded = true; renderAll(); }
+    if(getToken()) toast('Gagal ambil data terbaru, nampilin data terakhir.');
+  } finally {
+    setSync(-1);
+  }
+
+  // Siapin data tab lain di belakang layar biar pas dibuka langsung muncul.
+  gsRun('api_listNotes').then(n=>{ notes = n || []; writeLocalCache(); if(tab==='catatan') renderNotes(); }).catch(()=>{});
+  gsRun('api_listArchive').then(a=>{ archive = a || []; if(tab==='arsip') loadArchive(); }).catch(()=>{});
+}
+
+// Simpan ke server di belakang layar. Tampilan udah berubah duluan (gak nunggu server).
+let writeSeq = 0;
+async function save(fn, ...args){
+  const mySeq = ++writeSeq;
+  setSync(1);
+  writeLocalCache();
+  try {
+    const res = await gsRun(fn, ...args);
+    // Cuma pakai hasil server kalau ini perubahan paling akhir, biar klik cepat beruntun gak "loncat balik".
+    if(mySeq === writeSeq && Array.isArray(res)){ jobs = res; renderAll(); }
+    writeLocalCache();
+    return true;
+  } catch(e){
+    toast('Gagal menyimpan: ' + (e && e.message ? e.message : 'coba lagi'));
+    return false;
+  } finally {
+    setSync(-1);
+  }
+}
+
+// ── Render ────────────────────────────────────────────────────────
+function renderAll(){
+  renderStats();
+  renderChart();
+  renderJobs();
+  renderClients();
+  document.getElementById('clientNames').innerHTML =
+    clientGroups().map(c=>`<option value="${esc(c.nama)}"></option>`).join('');
+}
+
+function renderStats(){
+  const today = todayStr();
+  document.getElementById('vHari').textContent = jobs.filter(j=>j.status==='selesai' && j.tanggalSelesai===today).length;
+  document.getElementById('vProses').textContent = jobs.filter(j=>j.status==='proses').length;
+  document.getElementById('vStuck').textContent = jobs.filter(isStuck).length;
+  document.getElementById('cKerjaan').textContent = jobs.length;
+  ['stHari','stBulan','stProses','stStuck'].forEach(id=>document.getElementById(id).classList.remove('active'));
+  const map = { hariIni:'stHari', bulan:'stBulan', proses:'stProses', stuck:'stStuck' };
+  if(quick) document.getElementById(map[quick]).classList.add('active');
+}
+
+function renderChart(){
+  const counts = {};
+  JENIS.forEach(j=>counts[j]=0);
+  jobs.forEach(j=>{
+    if(j.status==='selesai' && monthKey(j.tanggalSelesai)===monthCursor){
+      const k = JENIS.includes(j.jenis) ? j.jenis : 'Lainnya';
+      counts[k]++;
+    }
+  });
+  const labels = JENIS.slice();
+  const data = labels.map(l=>counts[l]);
+  const total = data.reduce((a,b)=>a+b,0);
+  const [y,m] = monthCursor.split('-').map(Number);
+  const label = new Date(y, m-1, 1).toLocaleDateString('id-ID', { month:'long', year:'numeric' });
+  document.getElementById('monthLabel').textContent = label;
+  document.getElementById('vBulan').textContent = total;
+  document.getElementById('lBulan').textContent = monthCursor===todayStr().slice(0,7) ? 'Selesai bulan ini' : 'Selesai ' + label;
+
+  if(typeof Chart === 'undefined') return;
+  const colors = labels.map(l=>JENIS_COLOR[l]);
+  if(chart){
+    chart.data.datasets[0].data = data;
+    chart.update('none');
+    return;
+  }
+  chart = new Chart(document.getElementById('chart').getContext('2d'), {
+    type: 'bar',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 10, borderSkipped: false, maxBarThickness: 42 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: { legend: { display:false }, tooltip: { backgroundColor:'#0B3A53', padding:10, cornerRadius:10, displayColors:false } },
+      scales: {
+        x: { grid: { display:false }, ticks: { color:'#7B97A6', font:{ family:'Plus Jakarta Sans', size:11, weight:'600' } } },
+        y: { beginAtZero:true, ticks: { color:'#7B97A6', precision:0, font:{ family:'Plus Jakarta Sans', size:11 } }, grid: { color:'#E6F2F8' }, border: { display:false } }
+      }
+    }
+  });
+}
+
+function shiftMonth(delta){
+  let [y,m] = monthCursor.split('-').map(Number);
+  m += delta;
+  if(m<1){ m=12; y--; } else if(m>12){ m=1; y++; }
+  monthCursor = `${y}-${String(m).padStart(2,'0')}`;
+  renderChart();
+  if(quick==='bulan') renderJobs();
+}
+
+function setQuick(q){
+  quick = quick===q ? null : q;
+  if(tab!=='kerjaan') setTab('kerjaan');
+  renderStats();
+  renderJobs();
+}
+function setStatusChip(s){
+  statusChip = s;
+  document.querySelectorAll('#statusChips .chip').forEach(c=>c.classList.toggle('active', c.dataset.st===s));
+  renderJobs();
+}
+function setTab(t){
+  tab = t;
+  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===t));
+  ['kerjaan','klien','catatan','arsip'].forEach(x=>{
+    document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('hidden', x!==t);
+  });
+  if(t==='catatan') loadNotes();
+  if(t==='arsip') loadArchive();
+}
+
+function filteredJobs(){
+  const q = norm(document.getElementById('qJobs').value);
+  const jf = document.getElementById('fJenisFilter').value;
+  const today = todayStr();
+  return jobs.filter(j=>{
+    if(quick==='hariIni' && !(j.status==='selesai' && j.tanggalSelesai===today)) return false;
+    if(quick==='bulan' && !(j.status==='selesai' && monthKey(j.tanggalSelesai)===monthCursor)) return false;
+    if(quick==='proses' && j.status!=='proses') return false;
+    if(quick==='stuck' && !isStuck(j)) return false;
+    if(statusChip!=='semua' && j.status!==statusChip) return false;
+    if(jf!=='semua' && j.jenis!==jf) return false;
+    if(q && !norm(j.nama).includes(q) && !norm(j.noted).includes(q)) return false;
+    return true;
+  }).sort((a,b)=>{
+    if(a.status!==b.status) return a.status==='proses' ? -1 : 1;
+    if(a.status==='proses') return ageDays(b) - ageDays(a);
+    return String(b.tanggalSelesai).localeCompare(String(a.tanggalSelesai));
+  });
+}
+
+function credRow(j, label, uKey, pKey, type){
+  if(!j[uKey] && !j[pKey]) return '';
+  const k = j.id + ':' + type;
+  const pass = shown[k] ? esc(j[pKey]||'—') : '••••••••';
+  return `<div class="cred">
+    <span class="cred-text mono"><b>${label}</b>${esc(j[uKey]||'—')} / ${pass}</span>
+    <button class="ibtn" onclick="togglePw('${j.id}','${type}')" title="Lihat/sembunyikan">${shown[k]?'🙈':'👁'}</button>
+    <button class="ibtn" onclick="copyCred('${j.id}','${uKey}','${pKey}')" title="Salin">⧉</button>
+  </div>`;
+}
+
+function jobCard(j){
+  const done = j.status==='selesai';
+  const stuck = isStuck(j);
+  const color = JENIS_COLOR[j.jenis] || JENIS_COLOR.Lainnya;
+  const age = ageDays(j);
+  const meta = [
+    `Masuk <b>${fmtDate(j.tanggalMasuk)}</b>`,
+    done ? `Selesai <b>${fmtDate(j.tanggalSelesai)}</b>` : `<span style="color:${stuck?'var(--hot)':'var(--wait)'}; font-weight:700;">${age} hari berjalan</span>`,
+    j.pic ? `Dari <b>${esc(j.pic)}</b>` : ''
+  ].filter(Boolean).map(x=>`<span>${x}</span>`).join('');
+  return `<article class="job ${done?'done':''} ${stuck?'stuck':''}">
+    <button class="check" onclick="toggleStatus('${j.id}')" title="${done?'Tandai belum selesai':'Tandai selesai'}">${done?'✓':''}</button>
+    <div class="job-main">
+      <div class="job-top">
+        <button class="job-name" data-nama="${esc(j.nama)}" onclick="openClient(this.dataset.nama)">${esc(j.nama)}</button>
+        ${badge(j.jenis, color)}
+        ${j.jenisPt ? badge(j.jenisPt, JENISPT_COLOR[j.jenisPt]||'#64748B') : ''}
+        ${j.skalaPt ? badge(j.skalaPt, SKALA_COLOR[j.skalaPt]||'#64748B') : ''}
+      </div>
+      <div class="meta">${meta}</div>
+      ${j.noted ? `<div class="note">${esc(j.noted)}</div>` : ''}
+      <div class="creds">
+        ${credRow(j,'OSS','ossUser','ossPass','oss')}
+        ${credRow(j,'Coretax PIC','coretaxUser','coretaxPass','ctx')}
+        ${credRow(j,'Coretax PT','coretaxPtUser','coretaxPtPass','ctxpt')}
+        ${credRow(j,'AHU','ahuUser','ahuPass','ahu')}
+      </div>
+    </div>
+    <div class="job-actions">
+      <button class="ibtn" onclick="openJobForm('${j.id}')" title="Edit">✎</button>
+      <button class="ibtn" onclick="askDelete('${j.id}')" title="Hapus">🗑</button>
+    </div>
+  </article>`;
+}
+
+function renderJobs(){
+  const box = document.getElementById('jobList');
+  if(!loaded) return;
+  const list = filteredJobs();
+  if(!list.length){
+    box.innerHTML = `<div class="empty"><span class="empty-emoji">${jobs.length ? '🔎' : '🌊'}</span>${jobs.length ? 'Gak ada yang cocok sama filternya.' : 'Belum ada kerjaan. Klik “Kerjaan baru” buat mulai.'}</div>`;
+    return;
+  }
+  box.innerHTML = list.map(jobCard).join('');
+}
+
+function togglePw(id, type){ shown[id+':'+type] = !shown[id+':'+type]; renderJobs(); }
+function copyCred(id, uKey, pKey){
+  const j = jobs.find(x=>x.id===id);
+  if(j) copyText(`User: ${j[uKey]||''}\nPassword: ${j[pKey]||''}`);
+}
+
+// ── Klien ─────────────────────────────────────────────────────────
+function clientGroups(){
+  const map = {};
+  jobs.forEach(j=>{
+    const k = norm(j.nama);
+    if(!k) return;
+    if(!map[k]) map[k] = { key:k, nama:j.nama, jobs:[] };
+    map[k].jobs.push(j);
+  });
+  return Object.values(map).map(c=>{
+    c.jobs.sort((a,b)=>String(b.tanggalMasuk).localeCompare(String(a.tanggalMasuk)));
+    c.nama = c.jobs[0].nama;
+    c.proses = c.jobs.filter(j=>j.status==='proses').length;
+    return c;
+  }).sort((a,b)=> (b.proses - a.proses) || a.nama.localeCompare(b.nama));
+}
+
+function renderClients(){
+  const box = document.getElementById('clientList');
+  const q = norm(document.getElementById('qClients').value);
+  const groups = clientGroups();
+  document.getElementById('cKlien').textContent = groups.length;
+  const list = groups.filter(c=>!q || c.key.includes(q));
+  if(!list.length){
+    box.innerHTML = '<div class="empty full" style="grid-column:1/-1;"><span class="empty-emoji">🏢</span>Belum ada klien.</div>';
+    return;
+  }
+  box.innerHTML = list.map(c=>{
+    const jenisSet = [...new Set(c.jobs.map(j=>j.jenis))];
+    return `<button class="tile" data-nama="${esc(c.nama)}" onclick="openClient(this.dataset.nama)">
+      <p class="tile-title">${esc(c.nama)}</p>
+      <div class="tile-sub">${c.jobs.length} kerjaan · ${c.proses ? `<span style="color:var(--wait); font-weight:700;">${c.proses} masih proses</span>` : '<span style="color:var(--ok); font-weight:700;">semua beres</span>'}</div>
+      <div class="tile-badges">${jenisSet.map(js=>badge(js, JENIS_COLOR[js]||JENIS_COLOR.Lainnya)).join('')}</div>
+    </button>`;
+  }).join('');
+}
+
+let currentClient = null;
+function firstFilled(list, key){
+  for(const j of list){ if(j[key]) return j[key]; }
+  return '';
+}
+function openClient(nama){
+  const c = clientGroups().find(g=>g.key===norm(nama));
+  if(!c) return;
+  currentClient = c;
+  document.getElementById('clTitle').textContent = c.nama;
+  document.getElementById('clSub').textContent = `${c.jobs.length} kerjaan tercatat · ${c.proses} masih proses`;
+
+  const rows = [
+    ['Email PT','email','emailPass'], ['OSS','ossUser','ossPass'],
+    ['Coretax PT','coretaxPtUser','coretaxPtPass'], ['Coretax PIC','coretaxUser','coretaxPass'], ['AHU','ahuUser','ahuPass']
+  ].map(([lbl,u,p])=>{
+    const uv = firstFilled(c.jobs,u), pv = firstFilled(c.jobs,p);
+    if(!uv && !pv) return '';
+    return `<div class="cred"><span class="cred-text mono"><b>${lbl}</b>${esc(uv||'—')} / ${esc(pv||'—')}</span>
+      <button class="ibtn" onclick="copyText(${JSON.stringify(`User: ${uv}\nPassword: ${pv}`).replace(/"/g,'&quot;')})" title="Salin">⧉</button></div>`;
+  }).join('');
+  document.getElementById('clCreds').innerHTML = rows || '<div style="font-size:12.5px; color:var(--muted);">Belum ada akun tersimpan buat klien ini.</div>';
+
+  document.getElementById('clTimeline').innerHTML = c.jobs.map(j=>{
+    const done = j.status==='selesai';
+    return `<div class="tl">
+      <span class="tl-dot" style="background:${done?'var(--ok)':'var(--wait)'};"></span>
+      <div style="flex:1; min-width:0;">
+        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+          ${badge(j.jenis, JENIS_COLOR[j.jenis]||JENIS_COLOR.Lainnya)}
+          <span style="font-size:12px; font-weight:700; color:${done?'var(--ok)':'var(--wait)'};">${done?'Selesai':'Proses'}</span>
+        </div>
+        <div style="font-size:12px; color:var(--muted); margin-top:4px;">Masuk ${fmtDate(j.tanggalMasuk)}${done?' · Selesai '+fmtDate(j.tanggalSelesai):''}${j.pic?' · '+esc(j.pic):''}</div>
+        ${j.noted?`<div style="font-size:12.5px; color:var(--ink-2); margin-top:4px; white-space:pre-wrap;">${esc(j.noted)}</div>`:''}
+      </div>
+      <button class="ibtn" onclick="closeModal('mClient'); openJobForm('${j.id}')" title="Edit">✎</button>
+    </div>`;
+  }).join('');
+  openModal('mClient');
+}
+function clientNewJob(){
+  if(!currentClient) return;
+  closeModal('mClient');
+  openJobForm(null, currentClient.nama);
+}
+function clientPelunasan(){
+  if(!currentClient) return;
+  closeModal('mClient');
+  openPelunasan(currentClient.nama);
+}
+
+// ── Form kerjaan (tambah & edit) ──────────────────────────────────
+let editingId = null;
+
+function setVal(id, v){ document.getElementById(id).value = v==null ? '' : v; }
+function getVal(id){ return document.getElementById(id).value.trim(); }
+
+function onBentukChange(){
+  document.getElementById('wrapBentukCustom').classList.toggle('hidden', document.getElementById('fBentuk').value!=='__custom');
+  checkDup();
+}
+function onStatusChange(){
+  const done = document.getElementById('fStatus').value === 'selesai';
+  document.getElementById('wrapTanggalSelesai').classList.toggle('hidden', !done);
+  if(done && !getVal('fTanggalSelesai')) setVal('fTanggalSelesai', todayStr());
+}
+
+function onJenisChange(){
+  const jenis = document.getElementById('fJenis').value;
+  document.getElementById('wrapJenisCustom').classList.toggle('hidden', jenis!=='Lainnya');
+  const show = { oss: SEC_OSS.includes(jenis), ctx: SEC_CTX.includes(jenis), ahu: SEC_AHU.includes(jenis) };
+  document.getElementById('secOss').classList.toggle('hidden', !show.oss);
+  document.getElementById('secCtx').classList.toggle('hidden', !show.ctx);
+  document.getElementById('secAhu').classList.toggle('hidden', !show.ahu);
+  document.querySelectorAll('[data-sec]').forEach(el=>el.classList.toggle('hidden', !show[el.dataset.sec]));
+}
+
+function composeNama(bentuk, nama){
+  const n = nama.trim();
+  if(!bentuk) return n;
+  const nl = n.toLowerCase(), bl = bentuk.toLowerCase();
+  if(nl===bl || nl.startsWith(bl+' ')) return n;
+  // Kalau nama yang diketik udah persis nama klien yang ada (dipilih dari saran), pakai apa adanya.
+  if(jobs.some(j=>norm(j.nama)===norm(n))) return n;
+  return `${bentuk} ${n}`;
+}
+function formNama(){
+  if(editingId) return getVal('fNama');
+  let bentuk = document.getElementById('fBentuk').value;
+  if(bentuk==='__custom') bentuk = getVal('fBentukCustom');
+  return composeNama(bentuk, getVal('fNamaUsaha'));
+}
+function formJenis(){
+  const j = document.getElementById('fJenis').value;
+  return j==='Lainnya' ? (getVal('fJenisCustom') || 'Lainnya') : j;
+}
+
+function checkDup(){
+  const warn = document.getElementById('dupWarn');
+  if(editingId || !getVal('fNamaUsaha')){ warn.classList.add('hidden'); return; }
+  const nama = norm(formNama());
+  const jenis = formJenis();
+  const same = jobs.filter(j=>norm(j.nama)===nama && j.jenis===jenis);
+  if(!same.length){ warn.classList.add('hidden'); return; }
+  const proses = same.filter(j=>j.status==='proses').length;
+  warn.innerHTML = `⚠️ <b>${esc(formNama())}</b> udah punya ${same.length} kerjaan <b>${esc(jenis)}</b>` +
+    (proses ? ` dan <b>${proses}</b> di antaranya masih proses.` : ` (semuanya udah selesai).`) +
+    ` Pastiin ini bukan data dobel ya.`;
+  warn.classList.remove('hidden');
+}
+
+function openJobForm(id, prefillNama){
+  editingId = id || null;
+  const j = id ? jobs.find(x=>x.id===id) : null;
+  const isEdit = !!j;
+
+  document.getElementById('jobFormTitle').textContent = isEdit ? 'Edit kerjaan' : 'Kerjaan baru';
+  document.getElementById('jobFormSub').textContent = isEdit
+    ? 'Nama, jenis PT, skala, dan akun berlaku buat semua layanan klien ini.'
+    : 'Kalau klien udah ada, layanannya otomatis nyatu ke data klien itu.';
+  document.getElementById('jobFormSubmit').textContent = isEdit ? 'Simpan perubahan' : 'Tambah kerjaan';
+  ['wrapBentuk','wrapNamaUsaha'].forEach(w=>document.getElementById(w).classList.toggle('hidden', isEdit));
+  document.getElementById('wrapNama').classList.toggle('hidden', !isEdit);
+  document.getElementById('wrapBentukCustom').classList.add('hidden');
+  document.getElementById('dupWarn').classList.add('hidden');
+
+  setVal('fBentuk', 'PT');
+  setVal('fBentukCustom', '');
+  setVal('fNamaUsaha', prefillNama || '');
+  setVal('fNama', j ? j.nama : '');
+  const jenis = j ? j.jenis : 'NIB';
+  setVal('fJenis', JENIS.includes(jenis) ? jenis : 'Lainnya');
+  setVal('fJenisCustom', JENIS.includes(jenis) ? '' : jenis);
+  setVal('fPic', j ? j.pic : '');
+  setVal('fTanggal', j ? (parseIso(j.tanggalMasuk) ? j.tanggalMasuk.slice(0,10) : todayStr()) : todayStr());
+
+  // Klien lama: tarik jenis/skala/akun dari kerjaan sebelumnya biar gak ngetik ulang.
+  const src = j || (prefillNama ? jobs.find(x=>norm(x.nama)===norm(prefillNama)) : null);
+  const pick = k => j ? j[k] : (src ? src[k] : '');
+  setVal('fJenisPt', pick('jenisPt'));
+  setVal('fSkala', pick('skalaPt'));
+  setVal('fOssUser', pick('ossUser')); setVal('fOssPass', pick('ossPass'));
+  setVal('fCtxUser', pick('coretaxUser')); setVal('fCtxPass', pick('coretaxPass'));
+  setVal('fAhuUser', pick('ahuUser')); setVal('fAhuPass', pick('ahuPass'));
+  setVal('fNoted', j ? j.noted : '');
+  setVal('fStatus', j ? (j.status || 'proses') : 'proses');
+  setVal('fTanggalSelesai', j && parseIso(j.tanggalSelesai) ? j.tanggalSelesai.slice(0,10) : '');
+  onStatusChange();
+
+  onJenisChange();
+  openModal('mJob');
+  setTimeout(()=>document.getElementById(isEdit ? 'fNama' : 'fNamaUsaha').focus(), 60);
+}
+
+async function submitJobForm(){
+  const nama = formNama();
+  if(!nama){ toast('Nama usahanya diisi dulu'); return; }
+  const fields = {
+    nama,
+    jenis: formJenis(),
+    pic: document.getElementById('fPic').value,
+    tanggalMasuk: getVal('fTanggal') || todayStr(),
+    jenisPt: document.getElementById('fJenisPt').value,
+    skalaPt: document.getElementById('fSkala').value,
+    ossUser: getVal('fOssUser'), ossPass: document.getElementById('fOssPass').value,
+    coretaxUser: getVal('fCtxUser'), coretaxPass: document.getElementById('fCtxPass').value,
+    ahuUser: getVal('fAhuUser'), ahuPass: document.getElementById('fAhuPass').value,
+    noted: getVal('fNoted')
+  };
+  const status = document.getElementById('fStatus').value;
+  fields.status = status;
+  fields.tanggalSelesai = status==='selesai' ? (getVal('fTanggalSelesai') || todayStr()) : '';
+  closeModal('mJob');
+  if(editingId){
+    const idx = jobs.findIndex(x=>x.id===editingId);
+    if(idx>-1) jobs[idx] = Object.assign({}, jobs[idx], fields);
+    renderAll();
+    await save('api_updateJob', Object.assign({ id: editingId }, fields));
+    toast('Tersimpan');
+  } else {
+    const job = Object.assign({ id: uid() }, fields);
+    jobs.unshift(job);
+    renderAll();
+    await save('api_addJob', job);
+    toast('Kerjaan ditambah 🎉');
+  }
+  editingId = null;
+}
+
+// ── Alur status ───────────────────────────────────────────────────
+const NEXT = {
+  'PT Perorangan': { to:'NIB', cred:'oss', q: n => `${n} — PT Perorangan rampung. Lanjut urus NIB?` },
+  'NPWP':          { to:'NIB', cred:'oss', q: n => `${n} — NPWP rampung. Lanjut urus NIB?` },
+  'NIB':           { to:'PKP', cred:'ctx', q: n => `${n} — NIB rampung. PT ini termasuk PKP?` }
+};
+let pendingId = null;
+
+function toggleStatus(id){
+  const j = jobs.find(x=>x.id===id);
+  if(!j) return;
+  if(j.status==='selesai'){
+    applyLocal(id, { status:'proses', tanggalSelesai:'' });
+    save('api_updateJob', { id, status:'proses', tanggalSelesai:'' });
+    return;
+  }
+  const next = NEXT[j.jenis];
+  if(next){
+    pendingId = id;
+    document.getElementById('askTitle').textContent = `Lanjut ke ${next.to}?`;
+    document.getElementById('askSub').textContent = next.q(j.nama);
+    document.getElementById('askYes').textContent = next.to==='PKP' ? 'Ya, PKP' : `Ya, lanjut ${next.to}`;
+    openModal('mAsk');
+    return;
+  }
+  finalizeJob(j);
+}
+
+function applyLocal(id, patch){
+  const idx = jobs.findIndex(x=>x.id===id);
+  if(idx>-1) jobs[idx] = Object.assign({}, jobs[idx], patch);
+  renderAll();
+}
+
+function answerAsk(yes){
+  closeModal('mAsk');
+  const j = jobs.find(x=>x.id===pendingId);
+  if(!j) return;
+  if(!yes){ finalizeJob(j); return; }
+  const next = NEXT[j.jenis];
+  const lbl = next.cred==='ctx' ? 'Coretax PIC' : 'OSS';
+  document.getElementById('migTitle').textContent = `Lanjut ke ${next.to}`;
+  document.getElementById('migSub').textContent = `${j.nama} — isi akun ${lbl}-nya (boleh dikosongin dulu).`;
+  document.getElementById('migUserLbl').textContent = `User ${lbl}`;
+  document.getElementById('migPassLbl').textContent = `Password ${lbl}`;
+  document.getElementById('migBtn').textContent = `Lanjut ke ${next.to}`;
+  setVal('migUser', next.cred==='ctx' ? j.coretaxUser : j.ossUser);
+  setVal('migPass', next.cred==='ctx' ? j.coretaxPass : j.ossPass);
+  openModal('mMigrate');
+}
+
+function submitMigrate(){
+  closeModal('mMigrate');
+  const j = jobs.find(x=>x.id===pendingId);
+  if(!j) return;
+  const next = NEXT[j.jenis];
+  const u = getVal('migUser'), p = document.getElementById('migPass').value;
+  const creds = next.cred==='ctx' ? { coretaxUser:u, coretaxPass:p } : { ossUser:u, ossPass:p };
+  const today = todayStr();
+  const newId = uid();
+  // Tahap sekarang tetap tercatat sebagai selesai.
+  const idx = jobs.findIndex(x=>x.id===j.id);
+  if(idx>-1) jobs[idx] = Object.assign({}, jobs[idx], { status:'selesai', tanggalSelesai: jobs[idx].tanggalSelesai || today, noted:'done' });
+  // Akun berlaku buat semua layanan klien ini.
+  jobs.forEach(x=>{ if(norm(x.nama)===norm(j.nama)) Object.keys(creds).forEach(k=>{ if(creds[k]) x[k] = creds[k]; }); });
+  // Tahap berikutnya jadi baris baru.
+  const base = jobs.find(x=>x.id===j.id);
+  jobs.unshift(Object.assign({}, base, { id: newId, jenis: next.to, status:'proses', tanggalMasuk: today, tanggalSelesai:'', noted:'' }));
+  renderAll();
+  save('api_advanceJob', j.id, next.to, creds, newId);
+  toast(`${j.jenis} selesai ✅ lanjut ke ${next.to}`);
+}
+
+function finalizeJob(j){
+  const patch = { status:'selesai', tanggalSelesai: todayStr(), noted:'done' };
+  applyLocal(j.id, patch);
+  save('api_updateJob', Object.assign({ id: j.id }, patch));
+  toast('Mantap, selesai ✅');
+  const punyaLogo = jobs.some(x=>norm(x.nama)===norm(j.nama) && x.jenis==='Logo');
+  if(j.jenis!=='Logo' && !punyaLogo){
+    pendingId = j.id;
+    document.getElementById('logoSub').textContent = `${j.nama} — ${j.jenis} udah kelar. Logonya udah dibikin juga?`;
+    openModal('mLogo');
+  }
+}
+
+function answerLogo(ans){
+  closeModal('mLogo');
+  const j = jobs.find(x=>x.id===pendingId);
+  if(!j || ans==='skip') return;
+  const base = { id: uid(), nama: j.nama, pic: j.pic || '', tanggalMasuk: todayStr() };
+  const logo = ans==='udah'
+    ? Object.assign(base, { jenis:'Logo', status:'selesai', tanggalSelesai: todayStr(), noted:'done' })
+    : Object.assign(base, { jenis:'Logo', status:'proses', tanggalSelesai:'', noted:`Pengingat otomatis setelah ${j.jenis} selesai` });
+  jobs.unshift(logo);
+  renderAll();
+  save('api_addJob', logo);
+  toast(ans==='udah' ? 'Logo dicatat udah beres' : `Tugas Logo ditambah buat ${j.nama}`);
+}
+
+// ── Hapus & arsip ─────────────────────────────────────────────────
+let deleteId = null;
+function askDelete(id){
+  const j = jobs.find(x=>x.id===id);
+  if(!j) return;
+  deleteId = id;
+  document.getElementById('delSub').textContent = `${j.nama} (${j.jenis}) dipindah ke Arsip, masih bisa dipulihkan.`;
+  openModal('mDelete');
+}
+async function confirmDelete(){
+  closeModal('mDelete');
+  const id = deleteId;
+  jobs = jobs.filter(x=>x.id!==id);
+  renderAll();
+  if(await save('api_deleteJob', id)){
+    archive = null;
+    toast('Dipindah ke Arsip');
+  }
+}
+
+async function loadArchive(){
+  const box = document.getElementById('archiveList');
+  if(archive===null){
+    box.innerHTML = '<div class="skeleton"></div>';
+    try { archive = (await gsRun('api_listArchive')) || []; } catch(e){ archive = []; }
+  }
+  if(!archive.length){
+    box.innerHTML = '<div class="empty"><span class="empty-emoji">🗃️</span>Arsip masih kosong.</div>';
+    return;
+  }
+  box.innerHTML = archive.map(j=>`<article class="job done" style="opacity:.92;">
+    <div class="job-main">
+      <div class="job-top"><span class="job-name">${esc(j.nama)}</span>${badge(j.jenis, JENIS_COLOR[j.jenis]||JENIS_COLOR.Lainnya)}</div>
+      <div class="meta">Dihapus ${esc(j.deletedAt||'—')} · Masuk ${fmtDate(j.tanggalMasuk)}</div>
+    </div>
+    <button class="btn btn-soft btn-sm" onclick="restoreJob('${j.id}')">Pulihkan</button>
+  </article>`).join('');
+}
+async function restoreJob(id){
+  try {
+    const res = await gsRun('api_restoreJob', id);
+    jobs = res.jobs || jobs;
+    archive = res.archive || [];
+    renderAll();
+    loadArchive();
+    toast('Dipulihkan ↩️');
+  } catch(e){ toast('Gagal memulihkan'); }
+}
+
+// ── Pelunasan ─────────────────────────────────────────────────────
+function openPelunasan(prefill){
+  const groups = clientGroups().slice().sort((a,b)=>a.nama.localeCompare(b.nama));
+  document.getElementById('pNama').innerHTML = '<option value="">— pilih klien —</option>' +
+    groups.map(c=>`<option value="${esc(c.nama)}">${esc(c.nama)}</option>`).join('');
+  ['pEmail','pEmailPass','pOssUser','pOssPass','pCtxUser','pCtxPass'].forEach(id=>setVal(id,''));
+  document.getElementById('pelOut').classList.add('hidden');
+  if(prefill){
+    const c = groups.find(g=>g.key===norm(prefill));
+    if(c){ setVal('pNama', c.nama); onPelClient(); }
+  }
+  openModal('mPel');
+}
+
+function onPelClient(){
+  const c = clientGroups().find(g=>g.key===norm(document.getElementById('pNama').value));
+  document.getElementById('pelOut').classList.add('hidden');
+  if(!c) return;
+  setVal('pEmail', firstFilled(c.jobs,'email'));
+  setVal('pEmailPass', firstFilled(c.jobs,'emailPass'));
+  setVal('pOssUser', firstFilled(c.jobs,'ossUser'));
+  setVal('pOssPass', firstFilled(c.jobs,'ossPass'));
+  setVal('pCtxUser', firstFilled(c.jobs,'coretaxPtUser'));
+  setVal('pCtxPass', firstFilled(c.jobs,'coretaxPtPass'));
+}
+
+function generatePelunasan(){
+  const nama = document.getElementById('pNama').value;
+  if(!nama){ toast('Pilih klien dulu'); return; }
+  const f = {
+    email: getVal('pEmail'), emailPass: document.getElementById('pEmailPass').value,
+    ossUser: getVal('pOssUser'), ossPass: document.getElementById('pOssPass').value,
+    coretaxPtUser: getVal('pCtxUser'), coretaxPtPass: document.getElementById('pCtxPass').value
+  };
+  const akun = `Email           :  ${f.email||'-'}${f.emailPass ? `\nPass            :  ${f.emailPass}` : ''}
+User OSS     :  ${f.ossUser||'-'}
+Pass OSS      :  ${f.ossPass||'-'}
+
+Akun Coretax PT
+User : ${f.coretaxPtUser||'-'}
+Pass : ${f.coretaxPtPass||'-'}`;
+
+  setVal('outSubject', `Softfile Legalitas Perusahaan ${nama}`);
+  setVal('outEmail', `Dear ${nama},
+
+Berikut Softfile Legalitas Perusahaan dan dokumen lainnya, berikut juga terlampir akun OSS dan akun coretax
+
+${akun}
+
+Terima Kasih`);
+  setVal('outWa', `Dear ${nama},
+
+Berikut terlampir akun OSS dan akun coretax
+
+${akun}
+
+untuk legalitas perusahaan dan dokumen lainnya sudah saya kirimkan email pt
+Terima Kasih`);
+  document.getElementById('pelOut').classList.remove('hidden');
+
+  // Simpan akun ke semua kerjaan klien ini (yang kosong tidak menimpa data lama).
+  jobs.forEach(j=>{
+    if(norm(j.nama)!==norm(nama)) return;
+    Object.keys(f).forEach(k=>{ if(f[k]) j[k] = f[k]; });
+  });
+  save('api_updateByNama', nama, f);
+}
+
+function openGmail(){
+  const url = 'https://mail.google.com/mail/?view=cm&fs=1' +
+    '&to=' + encodeURIComponent(getVal('pEmail')) +
+    '&su=' + encodeURIComponent(document.getElementById('outSubject').value) +
+    '&body=' + encodeURIComponent(document.getElementById('outEmail').value);
+  window.open(url, '_blank');
+}
+
+// ── Catatan ───────────────────────────────────────────────────────
+let editingNoteId = null;
+
+async function loadNotes(force){
+  const box = document.getElementById('noteList');
+  if(notes===null || force){
+    box.innerHTML = '<div class="skeleton" style="grid-column:1/-1;"></div>';
+    try { notes = (await gsRun('api_listNotes')) || []; }
+    catch(e){ notes = []; toast('Gagal ambil catatan'); }
+  }
+  renderNotes();
+}
+
+function renderNotes(){
+  const box = document.getElementById('noteList');
+  if(notes===null) return;
+  const q = norm(document.getElementById('qNotes').value);
+  const list = notes.filter(n=>!q || norm(n.judul).includes(q) || norm(n.isi).includes(q));
+  if(!list.length){
+    box.innerHTML = `<div class="empty" style="grid-column:1/-1;"><span class="empty-emoji">📝</span>${notes.length ? 'Gak ketemu.' : 'Belum ada catatan.'}</div>`;
+    return;
+  }
+  box.innerHTML = list.map(n=>`<div class="tile" style="cursor:default;">
+    <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+      <p class="tile-title">${esc(n.judul || 'Tanpa judul')}</p>
+      <span style="display:flex; gap:6px;">
+        <button class="ibtn" data-id="${esc(n.id)}" onclick="copyNote(this.dataset.id)" title="Salin isi">⧉</button>
+        <button class="ibtn" data-id="${esc(n.id)}" onclick="openNoteForm(this.dataset.id)" title="Edit">✎</button>
+      </span>
+    </div>
+    <div class="tile-sub">${fmtDate(n.tanggal)}</div>
+    <div class="note-body">${esc(n.isi)}</div>
+  </div>`).join('');
+}
+
+function copyNote(id){
+  const n = (notes||[]).find(x=>x.id===id);
+  if(n) copyText(n.isi || '');
+}
+
+function openNoteForm(id){
+  editingNoteId = id || null;
+  const n = id ? (notes||[]).find(x=>x.id===id) : null;
+  document.getElementById('noteTitle').textContent = n ? 'Edit catatan' : 'Catatan baru';
+  document.getElementById('noteDel').classList.toggle('hidden', !n);
+  setVal('nJudul', n ? n.judul : '');
+  setVal('nIsi', n ? n.isi : '');
+  openModal('mNote');
+}
+
+async function saveNote(){
+  const judul = getVal('nJudul'), isi = document.getElementById('nIsi').value.trim();
+  if(!judul && !isi) return;
+  const existing = editingNoteId ? notes.find(x=>x.id===editingNoteId) : null;
+  const note = { id: editingNoteId || uid(), judul, isi, tanggal: existing ? existing.tanggal : todayStr() };
+  closeModal('mNote');
+  try {
+    notes = (await gsRun('api_saveNote', note)) || [];
+    renderNotes();
+    writeLocalCache();
+    toast('Catatan tersimpan');
+  } catch(e){ toast('Gagal simpan catatan'); }
+}
+
+async function deleteNote(){
+  if(!editingNoteId) return;
+  closeModal('mNote');
+  try {
+    notes = (await gsRun('api_deleteNote', editingNoteId)) || [];
+    renderNotes();
+    toast('Catatan dihapus');
+  } catch(e){ toast('Gagal hapus catatan'); }
+}
+
+window.addEventListener('load', ()=>{ if(loaded) renderChart(); });
+
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape') document.querySelectorAll('.overlay:not(.hidden)').forEach(o=>o.classList.add('hidden'));
+});
+
+load();
+</script>
+</body>
+</html>
