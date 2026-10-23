@@ -370,11 +370,11 @@
 </div>
 
 <!-- Modal: tambah / edit kerjaan -->
-<div id="mJob" class="overlay hidden" onclick="if(event.target===this) closeModal('mJob')">
+<div id="mJob" class="overlay hidden" onclick="if(event.target===this) closeJobForm()">
   <div class="modal">
     <div class="modal-head">
       <div><h2 id="jobFormTitle">Kerjaan baru</h2><p id="jobFormSub">Isi seperlunya, sisanya bisa dilengkapi nanti.</p></div>
-      <button class="close" onclick="closeModal('mJob')">✕</button>
+      <button class="close" onclick="closeJobForm()">✕</button>
     </div>
     <div class="form">
       <label class="field" id="wrapBentuk">Bentuk usaha
@@ -437,7 +437,7 @@
       </label>
     </div>
     <div class="modal-foot">
-      <button class="btn btn-ghost" onclick="closeModal('mJob')">Batal</button>
+      <button class="btn btn-ghost" onclick="closeJobForm()">Batal</button>
       <button class="btn btn-sea" id="jobFormSubmit" onclick="submitJobForm()">Simpan</button>
     </div>
   </div>
@@ -1121,6 +1121,7 @@ function onJenisChange(){
 
 function composeNama(bentuk, nama){
   const n = nama.trim();
+  if(!n) return '';
   if(!bentuk) return n;
   const nl = n.toLowerCase(), bl = bentuk.toLowerCase();
   if(nl===bl || nl.startsWith(bl+' ')) return n;
@@ -1196,9 +1197,16 @@ function openJobForm(id, prefillNama){
   setTimeout(()=>document.getElementById(isEdit ? 'fNama' : 'fNamaUsaha').focus(), 60);
 }
 
+function closeJobForm(){ editingId = null; closeModal('mJob'); }
+
 async function submitJobForm(){
+  // Kunci mode form saat ini juga. Simpanan sebelumnya yang masih nunggu server
+  // gak boleh ngubah form edit jadi form tambah.
+  const targetId = editingId;
   const nama = formNama();
   if(!nama){ toast('Nama usahanya diisi dulu'); return; }
+  if(targetId && !jobs.some(x=>x.id===targetId)){ toast('Kerjaan ini udah gak ada, coba muat ulang.'); return; }
+  editingId = null;
   const fields = {
     nama,
     jenis: formJenis(),
@@ -1215,20 +1223,19 @@ async function submitJobForm(){
   fields.status = status;
   fields.tanggalSelesai = status==='selesai' ? (getVal('fTanggalSelesai') || todayStr()) : '';
   closeModal('mJob');
-  if(editingId){
-    const idx = jobs.findIndex(x=>x.id===editingId);
+  if(targetId){
+    const idx = jobs.findIndex(x=>x.id===targetId);
     if(idx>-1) jobs[idx] = Object.assign({}, jobs[idx], fields);
     renderAll();
-    await save('api_updateJob', Object.assign({ id: editingId }, fields));
     toast('Tersimpan');
+    await save('api_updateJob', Object.assign({ id: targetId }, fields));
   } else {
     const job = Object.assign({ id: uid() }, fields);
     jobs.unshift(job);
     renderAll();
-    await save('api_addJob', job);
     toast('Kerjaan ditambah 🎉');
+    await save('api_addJob', job);
   }
-  editingId = null;
 }
 
 // ── Alur status ───────────────────────────────────────────────────
