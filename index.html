@@ -689,18 +689,29 @@
 
     <div id="pelOut" class="hidden">
       <div class="out-block">
+        <div class="out-head"><span>📎 Lampiran legalitas</span><span class="muted" style="font-size:12px; font-weight:600;">NIB, akta, SK, NPWP, dll</span></div>
+        <label class="file-pick" for="pFiles">📎 Pilih file legalitas dari perangkat (bisa banyak sekaligus)</label>
+        <input id="pFiles" type="file" multiple class="hidden" onchange="onPelFilePick(this)" />
+        <div id="pFileList" class="mini-list" style="margin-top:8px;"></div>
+      </div>
+      <div class="out-block">
         <div class="out-head"><span>📧 Email — subject</span><button class="ibtn" onclick="copyField('outSubject')" title="Salin">⧉</button></div>
-        <input id="outSubject" class="out mono" readonly />
+        <input id="outSubject" class="out mono" />
       </div>
       <div class="out-block">
         <div class="out-head">
           <span>📧 Email — isi</span>
           <span style="display:flex; gap:6px;">
-            <button class="btn btn-soft btn-sm" onclick="openGmail()">Buka di Gmail</button>
+            <button class="btn btn-ghost btn-sm" onclick="openGmail()" title="Buka Gmail manual">Gmail manual</button>
             <button class="ibtn" onclick="copyField('outEmail')" title="Salin">⧉</button>
           </span>
         </div>
-        <textarea id="outEmail" class="out mono" readonly></textarea>
+        <textarea id="outEmail" class="out mono"></textarea>
+      </div>
+      <div id="pWarn" class="warn hidden" style="margin-top:12px;"></div>
+      <div id="pSentInfo" class="hidden" style="margin-top:12px; font-size:13px; font-weight:700; color:var(--ok, #0f9d58);"></div>
+      <div style="display:flex; justify-content:flex-end; margin-top:12px;">
+        <button class="btn btn-sea" id="pSendBtn" onclick="sendPelunasan()">📨 Kirim email sekarang</button>
       </div>
       <div class="out-block">
         <div class="out-head"><span>💬 WhatsApp</span><button class="ibtn" onclick="copyField('outWa')" title="Salin">⧉</button></div>
@@ -1754,6 +1765,20 @@ ${akun}
 untuk legalitas perusahaan dan dokumen lainnya sudah saya kirimkan email pt
 Terima Kasih`);
   document.getElementById('pelOut').classList.remove('hidden');
+  pelFiles = [];
+  renderPelFiles();
+  const c = clientGroups().find(g=>g.key===norm(nama));
+  const sentAt = c && firstFilled(c.jobs,'pelunasanAt');
+  const pw = document.getElementById('pWarn');
+  const msgs = [];
+  if(!f.email) msgs.push('Email PT masih kosong, isi dulu di atas biar bisa dikirim.');
+  if(sentAt) msgs.push(`Pelunasan klien ini udah pernah dikirim (${esc(sentAt)}).`);
+  pw.innerHTML = msgs.map(m=>'⚠️ '+m).join('<br>');
+  pw.classList.toggle('hidden', !msgs.length);
+  document.getElementById('pSentInfo').classList.add('hidden');
+  const sb = document.getElementById('pSendBtn');
+  sb.disabled = false; sb.textContent = '📨 Kirim email sekarang';
+  setTimeout(()=>document.getElementById('pelOut').scrollIntoView({behavior:'smooth', block:'start'}), 60);
 
   // Simpan akun ke semua kerjaan klien ini (yang kosong tidak menimpa data lama).
   jobs.forEach(j=>{
@@ -1773,6 +1798,87 @@ function openGmail(){
     '&su=' + encodeURIComponent(document.getElementById('outSubject').value);
   window.open(url, '_blank', 'noopener');
   toast('Isi email udah disalin, tinggal paste (Ctrl+V) di Gmail');
+}
+
+// Kirim email pelunasan langsung (lewat Apps Script) + lampiran legalitas dari perangkat.
+let pelFiles = [];
+const PEL_MAX_MB = 18;   // total lampiran (batas Gmail 25 MB, dikurangi ukuran encoding)
+
+function renderPelFiles(){
+  const total = pelFiles.reduce((a,x)=>a+x.size, 0);
+  document.getElementById('pFileList').innerHTML = pelFiles.map((x,i)=>`<div class="mini">
+    <div class="mini-ico">${/pdf/.test(x.mime) ? '📕' : /image/.test(x.mime) ? '🖼️' : /zip/.test(x.mime) ? '🗜️' : '📄'}</div>
+    <div class="mini-main"><div class="mini-title">${esc(x.name)}</div><div class="mini-sub">${fmtSize(x.size)}</div></div>
+    <button class="ibtn" onclick="pelFiles.splice(${i},1); renderPelFiles();" title="Hapus">✕</button>
+  </div>`).join('') + (pelFiles.length > 1 ? `<div class="mini-sub" style="text-align:right;">Total ${fmtSize(total)} dari maks ${PEL_MAX_MB} MB</div>` : '');
+}
+
+function onPelFilePick(input){
+  const files = [...input.files];
+  input.value = '';
+  let total = pelFiles.reduce((a,x)=>a+x.size, 0);
+  files.forEach(file=>{
+    if(pelFiles.some(x=>x.name===file.name && x.size===file.size)) return;
+    if(total + file.size > PEL_MAX_MB*1048576){ toast(`Total lampiran maksimal ${PEL_MAX_MB} MB. ${file.name} gak ditambah.`); return; }
+    total += file.size;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      pelFiles.push({ name: file.name, mime: file.type || 'application/octet-stream', size: file.size, data: String(reader.result).split(',')[1] || '' });
+      renderPelFiles();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function sendPelunasan(){
+  const nama = document.getElementById('pNama').value;
+  const to = getVal('pEmail');
+  const subject = getVal('outSubject');
+  const body = document.getElementById('outEmail').value;
+  if(!nama){ toast('Pilih klien dulu'); return; }
+  if(!/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(to)){ toast('Email PT-nya belum bener'); document.getElementById('pEmail').focus(); return; }
+  if(!subject){ toast('Subject masih kosong'); return; }
+  if(!pelFiles.length && !confirmNoFiles()) return;
+
+  const btn = document.getElementById('pSendBtn');
+  btn.disabled = true; btn.textContent = 'Mengirim…';
+  setSync(1);
+  try {
+    const res = await gsRun('api_sendPelunasan', {
+      nama, to, subject, body,
+      files: pelFiles.map(x=>({ name:x.name, mime:x.mime, data:x.data }))
+    });
+    if(Array.isArray(res)){ jobs = res; credsLoaded = true; }
+    const n = pelFiles.length;
+    pelFiles = [];
+    renderPelFiles();
+    renderAll();
+    writeLocalCache();
+    const info = document.getElementById('pSentInfo');
+    info.textContent = `✅ Terkirim ke ${to}${n ? ` dengan ${n} lampiran` : ''}. Salinannya ada di email kamu.`;
+    info.classList.remove('hidden');
+    document.getElementById('pWarn').classList.add('hidden');
+    btn.textContent = '✅ Terkirim';
+    toast(`Pelunasan terkirim ke ${to} ✅`);
+  } catch(e){
+    btn.disabled = false; btn.textContent = '📨 Kirim email sekarang';
+    const m = String(e.message||'');
+    toast(m === 'LAMPIRAN_KEGEDEAN' ? 'Lampiran kegedean (maks ~24 MB). Kurangi file-nya.'
+      : /Unknown action|tidak dikenal|gak dikenal/i.test(m) ? 'Code.gs belum versi terbaru. Update dulu di Apps Script.'
+      : 'Gagal kirim: ' + (m || 'coba lagi'));
+  } finally {
+    setSync(-1);
+  }
+}
+
+// Lampiran kosong: cukup sekali konfirmasi lewat tombol (tanpa dialog browser).
+let pelNoFileOk = false;
+function confirmNoFiles(){
+  if(pelNoFileOk){ pelNoFileOk = false; return true; }
+  pelNoFileOk = true;
+  toast('Belum ada lampiran legalitas. Klik Kirim sekali lagi kalau memang mau kirim tanpa lampiran.');
+  setTimeout(()=>{ pelNoFileOk = false; }, 6000);
+  return false;
 }
 
 // ── Gratisan: template + logo ke email PT ─────────────────────────
