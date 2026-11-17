@@ -42,29 +42,93 @@
   input, select, textarea { font-family: inherit; }
   .hidden { display: none !important; }
 
-  /* ── Hero ── */
-  .hero {
-    position: relative; overflow: hidden;
-    background: linear-gradient(135deg, #0B3A53 0%, #0E6E8C 45%, #06B6D4 100%);
-    color: #fff; padding: 28px 0 92px;
+  /* ── Tata letak: menu samping + isi ── */
+  :root { --side-w: 252px; }
+  .app { min-height: 100vh; }
+  .side {
+    position: fixed; inset: 0 auto 0 0; width: var(--side-w); z-index: 60;
+    display: flex; flex-direction: column; padding: 20px 14px 16px; overflow: hidden auto;
+    background: linear-gradient(170deg, #0B3A53 0%, #0E6E8C 58%, #0891B2 100%); color: #fff;
   }
-  .hero::before, .hero::after {
-    content: ''; position: absolute; border-radius: 50%; pointer-events: none;
+  .side::before {
+    content: ''; position: absolute; width: 340px; height: 340px; right: -170px; top: -150px; border-radius: 50%; pointer-events: none;
+    background: radial-gradient(circle, rgba(255,255,255,.16), rgba(255,255,255,0) 70%);
+  }
+  .side > * { position: relative; }
+  .side-brand { display: flex; align-items: center; gap: 12px; padding: 2px 8px 18px; }
+  .side-logo { width: 46px; height: 46px; flex: none; border-radius: 14px; box-shadow: 0 8px 20px rgba(0,0,0,.22), 0 0 0 2px rgba(255,255,255,.2); }
+  .side-app { font-size: 15px; font-weight: 800; letter-spacing: -.2px; }
+  .side-name { font-size: 12px; opacity: .72; font-weight: 600; margin-top: 1px; }
+  .side-nav { display: flex; flex-direction: column; gap: 2px; }
+  .side-group { font-size: 10.5px; letter-spacing: .9px; text-transform: uppercase; font-weight: 800; opacity: .5; padding: 14px 12px 6px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 12px; width: 100%; border: none; background: transparent;
+    color: rgba(255,255,255,.84); padding: 10px 12px; border-radius: 13px; font-size: 13.5px; font-weight: 700; text-align: left;
+    transition: background .12s, color .12s;
+  }
+  .nav-item svg { width: 19px; height: 19px; flex: none; }
+  .nav-item:hover { background: rgba(255,255,255,.11); color: #fff; }
+  .nav-item.active { background: #fff; color: var(--deep); box-shadow: 0 8px 18px rgba(0,0,0,.16); }
+  .nav-count { margin-left: auto; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.16); }
+  .nav-item.active .nav-count { background: var(--sea-soft); color: var(--sea); }
+  .side-foot { margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255,255,255,.14); }
+  .scrim { display: none; }
+
+  .main { margin-left: var(--side-w); min-width: 0; }
+  .topbar {
+    position: sticky; top: 0; z-index: 40; display: flex; align-items: center; gap: 12px;
+    padding: 16px 28px; background: rgba(242,249,252,.86); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  .menu-btn { display: none; width: 42px; height: 42px; border-radius: 13px; border: 1px solid var(--line); background: #fff; color: var(--deep); place-items: center; flex: none; }
+  .menu-btn svg { width: 20px; height: 20px; }
+  .tb-title { flex: 1; min-width: 0; }
+  .tb-title h1 { margin: 0; font-size: 21px; font-weight: 800; letter-spacing: -.3px; }
+  .tb-sub { font-size: 12.5px; color: var(--muted); font-weight: 600; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tb-add svg { width: 17px; height: 17px; }
+  .page-wrap { max-width: 1120px; margin: 0 auto; padding: 4px 28px 64px; }
+
+  .welcome {
+    position: relative; overflow: hidden; border-radius: 24px; margin-bottom: 16px; color: #fff;
+    background: linear-gradient(135deg, #0B3A53 0%, #0E6E8C 45%, #06B6D4 100%);
+    box-shadow: 0 14px 34px rgba(8,145,178,.22);
+  }
+  .welcome::before {
+    content: ''; position: absolute; width: 380px; height: 380px; right: -110px; top: -190px; border-radius: 50%; pointer-events: none;
     background: radial-gradient(circle, rgba(255,255,255,.18), rgba(255,255,255,0) 70%);
   }
-  .hero::before { width: 420px; height: 420px; right: -120px; top: -180px; }
-  .hero::after { width: 260px; height: 260px; left: -80px; bottom: -140px; }
-  .hero-wave { position: absolute; left: 0; bottom: -1px; width: 100%; height: 48px; display: block; }
+  .welcome-inner { position: relative; padding: 24px 26px 40px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  .welcome h2 { margin: 4px 0 2px; font-size: 26px; font-weight: 800; letter-spacing: -.4px; }
+  .hero-wave { position: absolute; left: 0; bottom: -1px; width: 100%; height: 40px; display: block; }
+
+  .grid-main { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; align-items: start; }
+  .grid-main > .card { margin-bottom: 16px; }
+  .card-note { margin: -4px 0 12px; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .mini-list { display: flex; flex-direction: column; gap: 8px; }
+  .mini { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: var(--surface-2); border: 1px solid transparent; min-width: 0; }
+  .mini:hover { border-color: var(--line); }
+  .mini-ico { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; font-size: 16px; flex: none; background: #fff; border: 1px solid var(--line); }
+  .mini-main { flex: 1; min-width: 0; }
+  .mini-title { font-size: 13.5px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: none; border: none; padding: 0; color: var(--ink); text-align: left; max-width: 100%; display: block; }
+  button.mini-title:hover { color: var(--sea); }
+  .mini-sub { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .add-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .add-row input { flex: 1 1 220px; border: 1.5px solid var(--line); background: var(--surface-2); border-radius: 12px; padding: 10px 12px; font-size: 13px; outline: none; color: var(--ink); }
+  .add-row input:focus { border-color: var(--sea-2); background: #fff; }
+  .chip-quick { background: var(--deep); border-color: var(--deep); color: #fff; }
+  .next-step { margin-top: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px; border-radius: 16px; background: var(--sea-soft); font-size: 13px; color: var(--ink); flex-wrap: wrap; }
+  .next-step span { color: var(--ink-2); font-size: 12.5px; }
+  .warn-inline { color: #9A5B00; font-weight: 700; }
+  .file-pick { border: 1.5px dashed var(--line); background: var(--surface-2); border-radius: 14px; padding: 14px; text-align: center; font-size: 12.5px; color: var(--muted); font-weight: 600; cursor: pointer; display: block; }
+  .file-pick:hover { border-color: var(--sea-2); color: var(--sea); }
+  .check-row { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 12px; background: var(--surface-2); font-size: 13px; font-weight: 600; color: var(--ink); }
+  .check-row input { width: 17px; height: 17px; accent-color: var(--sea); flex: none; }
+  .check-row .muted { color: var(--muted); font-weight: 500; font-size: 12px; margin-left: auto; white-space: nowrap; }
   .btn.btn-icon { padding: 0; width: 42px; height: 42px; justify-content: center; flex: none; }
   .btn.btn-icon svg { flex: none; width: 18px; height: 18px; }
-  .sync-pill { display: inline-block; margin-left: 10px; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,.18); opacity: 0; transform: translateY(2px); transition: opacity .2s, transform .2s; vertical-align: middle; }
+  .sync-pill { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--sea-soft); color: var(--sea); opacity: 0; transform: translateY(2px); transition: opacity .2s, transform .2s; white-space: nowrap; }
   .sync-pill.on { opacity: 1; transform: none; }
-  .hero-inner { position: relative; max-width: 1040px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
-  .brand { display: flex; align-items: center; gap: 16px; }
-  .brand-logo { width: 64px; height: 64px; flex: none; border-radius: 18px; box-shadow: 0 10px 26px rgba(0,0,0,.22), 0 0 0 3px rgba(255,255,255,.22); }
   .login-logo { width: 72px; height: 72px; display: block; margin: 0 auto 14px; border-radius: 20px; box-shadow: 0 12px 28px rgba(11,58,83,.28); }
   .greet { font-size: 13px; font-weight: 600; letter-spacing: .3px; opacity: .8; }
-  .hero h1 { margin: 4px 0 2px; font-size: 28px; font-weight: 800; letter-spacing: -.4px; }
   .hero-sub { font-size: 13.5px; opacity: .85; }
   .hero-actions { display: flex; gap: 8px; flex-wrap: wrap; }
   .btn { border: none; border-radius: 999px; padding: 11px 18px; font-size: 13.5px; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: transform .12s, box-shadow .12s, background .12s; }
@@ -77,8 +141,6 @@
   .btn-ghost { background: transparent; color: var(--ink-2); border: 1px solid var(--line); }
   .btn-danger { background: var(--hot); color: #fff; }
   .btn-sm { padding: 7px 13px; font-size: 12.5px; }
-
-  .wrap { max-width: 1040px; margin: -64px auto 0; padding: 0 20px 64px; position: relative; }
 
   /* ── Stats ── */
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
@@ -100,13 +162,6 @@
   .month-nav button { width: 28px; height: 28px; border-radius: 50%; border: none; background: #fff; color: var(--ink-2); font-size: 15px; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
   .month-nav span { font-size: 12.5px; font-weight: 700; min-width: 112px; text-align: center; }
   .chart-box { position: relative; height: 210px; }
-
-  /* ── Tabs ── */
-  .tabs { display: flex; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 5px; margin-bottom: 14px; box-shadow: var(--shadow); overflow-x: auto; }
-  .tab { flex: 1; border: none; background: transparent; border-radius: 999px; padding: 10px 14px; font-size: 13.5px; font-weight: 700; color: var(--muted); white-space: nowrap; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-  .tab.active { background: var(--deep); color: #fff; }
-  .tab .count { font-size: 11px; background: rgba(123,151,166,.18); padding: 2px 7px; border-radius: 999px; }
-  .tab.active .count { background: rgba(255,255,255,.2); }
 
   /* ── Toolbar ── */
   .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
@@ -200,20 +255,32 @@
   .login-err { color: var(--hot) !important; font-weight: 600; margin: 10px 0 0 !important; text-align: left; }
   .boot { min-height: 100vh; display: grid; place-items: center; color: var(--muted); font-weight: 600; }
 
+  @media (max-width: 1080px) {
+    .grid-main { grid-template-columns: 1fr; gap: 0; }
+  }
+  @media (max-width: 900px) {
+    .side { transform: translateX(-100%); transition: transform .22s ease; box-shadow: 0 0 40px rgba(0,0,0,.25); }
+    .app.side-open .side { transform: none; }
+    .app.side-open .scrim { display: block; position: fixed; inset: 0; z-index: 55; background: rgba(11,43,60,.45); backdrop-filter: blur(2px); }
+    .main { margin-left: 0; }
+    .menu-btn { display: grid; }
+    .topbar { padding: 12px 16px; }
+    .page-wrap { padding: 4px 16px 56px; }
+  }
   @media (max-width: 760px) {
     .stats { grid-template-columns: repeat(2, 1fr); }
     .grid2 { grid-template-columns: 1fr; }
   }
   @media (max-width: 560px) {
-    .hero { padding: 22px 0 84px; }
-    .hero-inner { padding: 0 14px; }
-    .hero h1 { font-size: 23px; }
-    .brand { gap: 12px; }
-    .brand-logo { width: 50px; height: 50px; border-radius: 15px; }
+    .tb-title h1 { font-size: 18px; }
+    .tb-add { padding: 0; width: 42px; height: 42px; justify-content: center; flex: none; }
+    .tb-add span { display: none; }
+    .sync-pill { display: none; }
+    .welcome-inner { padding: 20px 18px 34px; }
+    .welcome h2 { font-size: 21px; }
     .hero-actions { width: 100%; }
     .hero-actions .btn { flex: 1; justify-content: center; }
-    .hero-actions .btn-icon { flex: none; }
-    .wrap { padding: 0 14px 56px; }
+    .page-wrap { padding: 2px 12px 56px; }
     .stat { padding: 13px; }
     .stat-val { font-size: 25px; }
     .card { padding: 14px; }
@@ -223,8 +290,6 @@
     .modal-foot .btn { flex: 1; justify-content: center; }
     .job { padding: 12px 10px; }
     .job-name { font-size: 14px; }
-    .tab { padding: 9px 6px; font-size: 12.5px; gap: 4px; }
-    .tab .ti { display: none; }
   }
 </style>
 </head>
@@ -263,117 +328,188 @@
   </form>
 </div>
 
-<div id="appRoot" class="hidden">
-  <section class="hero">
-    <div class="hero-inner">
-      <div class="brand">
-        <svg class="brand-logo" aria-label="Logo Tracker Kerjaan"><use href="#logoMark"/></svg>
-        <div>
-          <div class="greet" id="greet">Selamat datang</div>
-          <h1>Razan Ahmad Zharfan</h1>
-          <div class="hero-sub"><span id="todayLabel"></span><span id="syncPill" class="sync-pill">Menyinkronkan…</span></div>
-        </div>
-      </div>
-      <div class="hero-actions">
-        <button class="btn btn-glass" onclick="openPelunasan()">💌 Pelunasan</button>
-        <button class="btn btn-white" onclick="openJobForm()">＋ Kerjaan baru</button>
-        <button class="btn btn-glass btn-icon" onclick="openSecurity()" title="Keamanan & perangkat login" aria-label="Keamanan">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/>
-          </svg>
-        </button>
-        <button class="btn btn-glass btn-icon" onclick="doLogout()" title="Keluar dari perangkat ini" aria-label="Keluar">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/>
-          </svg>
-        </button>
+<div id="appRoot" class="app hidden">
+  <aside class="side" id="side" aria-label="Menu utama">
+    <div class="side-brand">
+      <svg class="side-logo" aria-label="Logo Tracker Kerjaan"><use href="#logoMark"/></svg>
+      <div>
+        <div class="side-app">Tracker Kerjaan</div>
+        <div class="side-name">Razan Ahmad Zharfan</div>
       </div>
     </div>
-    <svg class="hero-wave" viewBox="0 0 1440 48" preserveAspectRatio="none" aria-hidden="true">
-      <path fill="#F2F9FC" d="M0,32 C240,0 480,48 720,28 C960,8 1200,44 1440,22 L1440,48 L0,48 Z"></path>
-    </svg>
-  </section>
-
-  <main class="wrap">
-    <div class="stats">
-      <button class="stat" id="stHari" style="--c:var(--ok); --cs:var(--ok-soft);" onclick="setQuick('hariIni')">
-        <div class="stat-icon">✅</div>
-        <div class="stat-val" id="vHari">0</div>
-        <div class="stat-lbl">Selesai hari ini</div>
-      </button>
-      <button class="stat" id="stBulan" style="--c:var(--sea); --cs:var(--sea-soft);" onclick="setQuick('bulan')">
-        <div class="stat-icon">📅</div>
-        <div class="stat-val" id="vBulan">0</div>
-        <div class="stat-lbl" id="lBulan">Selesai bulan ini</div>
-      </button>
-      <button class="stat" id="stProses" style="--c:var(--wait); --cs:var(--wait-soft);" onclick="setQuick('proses')">
-        <div class="stat-icon">⏳</div>
-        <div class="stat-val" id="vProses">0</div>
-        <div class="stat-lbl">Sedang berjalan</div>
-      </button>
-      <button class="stat" id="stStuck" style="--c:var(--hot); --cs:var(--hot-soft);" onclick="setQuick('stuck')">
-        <div class="stat-icon">🚨</div>
-        <div class="stat-val" id="vStuck">0</div>
-        <div class="stat-lbl">Nyangkut ≥ 7 hari</div>
-      </button>
-    </div>
-
-    <div class="card">
-      <div class="card-head">
-        <h3 class="card-title">Selesai per jenis layanan</h3>
-        <div class="month-nav">
-          <button onclick="shiftMonth(-1)" aria-label="Bulan sebelumnya">‹</button>
-          <span id="monthLabel"></span>
-          <button onclick="shiftMonth(1)" aria-label="Bulan berikutnya">›</button>
-        </div>
-      </div>
-      <div class="chart-box"><canvas id="chart"></canvas></div>
-    </div>
-
-    <nav class="tabs">
-      <button class="tab active" data-tab="kerjaan" onclick="setTab('kerjaan')"><span class="ti">🗂️</span> Kerjaan <span class="count" id="cKerjaan">0</span></button>
-      <button class="tab" data-tab="klien" onclick="setTab('klien')"><span class="ti">🏢</span> Klien <span class="count" id="cKlien">0</span></button>
-      <button class="tab" data-tab="catatan" onclick="setTab('catatan')"><span class="ti">📝</span> Catatan</button>
-      <button class="tab" data-tab="arsip" onclick="setTab('arsip')"><span class="ti">🗃️</span> Arsip</button>
+    <nav class="side-nav">
+      <div class="side-group">Kerjaan</div>
+      <button class="nav-item" data-page="ringkasan" onclick="go('ringkasan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></svg><span>Ringkasan</span></button>
+      <button class="nav-item" data-page="kerjaan" onclick="go('kerjaan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1"/><path d="M9 13l2 2 4-4"/></svg><span>Kerjaan</span><span class="nav-count" id="cKerjaan">0</span></button>
+      <button class="nav-item" data-page="klien" onclick="go('klien')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 21V5a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1v16"/><path d="M15 9h4a1 1 0 0 1 1 1v11"/><path d="M8 8h3M8 12h3M8 16h3"/><path d="M3 21h18"/></svg><span>Klien</span><span class="nav-count" id="cKlien">0</span></button>
+      <div class="side-group">Kirim ke klien</div>
+      <button class="nav-item" onclick="openPelunasan()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span>Pelunasan</span></button>
+      <button class="nav-item" data-page="gratisan" onclick="go('gratisan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg><span>Gratisan</span><span class="nav-count" id="cGratisan">0</span></button>
+      <div class="side-group">Lainnya</div>
+      <button class="nav-item" data-page="catatan" onclick="go('catatan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/><path d="M8 13h8M8 17h5"/></svg><span>Catatan</span></button>
+      <button class="nav-item" data-page="arsip" onclick="go('arsip')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9"/><path d="M10 13h4"/></svg><span>Arsip</span></button>
+      <button class="nav-item" onclick="openSecurity()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><span>Keamanan</span></button>
     </nav>
+    <div class="side-foot">
+      <button class="nav-item" onclick="doLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l-5-5 5-5"/><path d="M5 12h11"/></svg><span>Keluar</span></button>
+    </div>
+  </aside>
+  <div class="scrim" onclick="toggleSide(false)"></div>
 
-    <!-- Tab Kerjaan -->
-    <section id="tabKerjaan" class="card">
-      <div class="toolbar">
-        <label class="search"><span>🔍</span><input id="qJobs" placeholder="Cari nama klien atau catatan..." oninput="renderJobs()" /></label>
-        <select class="select" id="fJenisFilter" onchange="renderJobs()"></select>
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" onclick="toggleSide(true)" aria-label="Buka menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <div class="tb-title">
+        <h1 id="pageTitle">Ringkasan</h1>
+        <div class="tb-sub" id="pageSub"></div>
       </div>
-      <div class="chips" id="statusChips" style="margin-bottom:14px;">
-        <button class="chip active" data-st="semua" onclick="setStatusChip('semua')">Semua</button>
-        <button class="chip" data-st="proses" onclick="setStatusChip('proses')">Proses</button>
-        <button class="chip" data-st="selesai" onclick="setStatusChip('selesai')">Selesai</button>
-      </div>
-      <div class="list" id="jobList"></div>
-    </section>
+      <span id="syncPill" class="sync-pill">Menyinkronkan…</span>
+      <button class="btn btn-sea tb-add" onclick="openJobForm()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Kerjaan baru</span></button>
+    </header>
 
-    <!-- Tab Klien -->
-    <section id="tabKlien" class="card hidden">
-      <div class="toolbar">
-        <label class="search"><span>🔍</span><input id="qClients" placeholder="Cari klien..." oninput="renderClients()" /></label>
-      </div>
-      <div class="grid2" id="clientList"></div>
-    </section>
+    <main class="page-wrap">
+      <!-- Halaman: Ringkasan -->
+      <section id="pageRingkasan" class="page">
+        <div class="welcome">
+          <div class="welcome-inner">
+            <div>
+              <div class="greet" id="greet">Selamat datang</div>
+              <h2>Razan Ahmad Zharfan</h2>
+              <div class="hero-sub" id="todayLabel"></div>
+            </div>
+            <div class="hero-actions">
+              <button class="btn btn-glass" onclick="openPelunasan()">💌 Pelunasan</button>
+              <button class="btn btn-white" onclick="go('gratisan')">🎁 Gratisan</button>
+            </div>
+          </div>
+          <svg class="hero-wave" viewBox="0 0 1440 48" preserveAspectRatio="none" aria-hidden="true">
+            <path fill="rgba(255,255,255,.14)" d="M0,32 C240,0 480,48 720,28 C960,8 1200,44 1440,22 L1440,48 L0,48 Z"></path>
+          </svg>
+        </div>
 
-    <!-- Tab Catatan -->
-    <section id="tabCatatan" class="card hidden">
-      <div class="toolbar">
-        <label class="search"><span>🔍</span><input id="qNotes" placeholder="Cari catatan..." oninput="renderNotes()" /></label>
-        <button class="btn btn-sea btn-sm" onclick="openNoteForm()">＋ Catatan</button>
-      </div>
-      <div class="grid2" id="noteList"></div>
-    </section>
+        <div class="stats">
+          <button class="stat" id="stHari" style="--c:var(--ok); --cs:var(--ok-soft);" onclick="setQuick('hariIni')">
+            <div class="stat-icon">✅</div>
+            <div class="stat-val" id="vHari">0</div>
+            <div class="stat-lbl">Selesai hari ini</div>
+          </button>
+          <button class="stat" id="stBulan" style="--c:var(--sea); --cs:var(--sea-soft);" onclick="setQuick('bulan')">
+            <div class="stat-icon">📅</div>
+            <div class="stat-val" id="vBulan">0</div>
+            <div class="stat-lbl" id="lBulan">Selesai bulan ini</div>
+          </button>
+          <button class="stat" id="stProses" style="--c:var(--wait); --cs:var(--wait-soft);" onclick="setQuick('proses')">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-val" id="vProses">0</div>
+            <div class="stat-lbl">Sedang berjalan</div>
+          </button>
+          <button class="stat" id="stStuck" style="--c:var(--hot); --cs:var(--hot-soft);" onclick="setQuick('stuck')">
+            <div class="stat-icon">🚨</div>
+            <div class="stat-val" id="vStuck">0</div>
+            <div class="stat-lbl">Nyangkut ≥ 7 hari</div>
+          </button>
+        </div>
 
-    <!-- Tab Arsip -->
-    <section id="tabArsip" class="card hidden">
-      <p style="margin:0 0 12px; font-size:12.5px; color:var(--muted);">Kerjaan yang dihapus masuk ke sini dulu, jadi masih bisa dipulihkan kalau kepencet.</p>
-      <div class="list" id="archiveList"></div>
-    </section>
-  </main>
+        <div class="grid-main">
+          <div class="card">
+            <div class="card-head">
+              <h3 class="card-title">Selesai per jenis layanan</h3>
+              <div class="month-nav">
+                <button onclick="shiftMonth(-1)" aria-label="Bulan sebelumnya">‹</button>
+                <span id="monthLabel"></span>
+                <button onclick="shiftMonth(1)" aria-label="Bulan berikutnya">›</button>
+              </div>
+            </div>
+            <div class="chart-box"><canvas id="chart"></canvas></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3 class="card-title">Perlu dicek</h3>
+              <button class="btn btn-soft btn-sm" onclick="setQuick('proses', true)">Lihat semua</button>
+            </div>
+            <div id="attentionList" class="mini-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Halaman: Kerjaan -->
+      <section id="pageKerjaan" class="page hidden">
+        <div class="card">
+          <div class="toolbar">
+            <label class="search"><span>🔍</span><input id="qJobs" placeholder="Cari nama klien atau catatan..." oninput="renderJobs()" /></label>
+            <select class="select" id="fJenisFilter" onchange="renderJobs()"></select>
+          </div>
+          <div class="chips" id="statusChips" style="margin-bottom:14px;">
+            <button class="chip active" data-st="semua" onclick="setStatusChip('semua')">Semua</button>
+            <button class="chip" data-st="proses" onclick="setStatusChip('proses')">Proses</button>
+            <button class="chip" data-st="selesai" onclick="setStatusChip('selesai')">Selesai</button>
+            <button class="chip chip-quick hidden" id="quickChip" onclick="setQuick(null)"></button>
+          </div>
+          <div class="list" id="jobList"></div>
+        </div>
+      </section>
+
+      <!-- Halaman: Klien -->
+      <section id="pageKlien" class="page hidden">
+        <div class="card">
+          <div class="toolbar">
+            <label class="search"><span>🔍</span><input id="qClients" placeholder="Cari klien..." oninput="renderClients()" /></label>
+          </div>
+          <div class="grid2" id="clientList"></div>
+        </div>
+      </section>
+
+      <!-- Halaman: Gratisan -->
+      <section id="pageGratisan" class="page hidden">
+        <div class="grid-main">
+          <div class="card">
+            <div class="card-head">
+              <h3 class="card-title">File gratisan</h3>
+              <button class="btn btn-soft btn-sm" onclick="toggleAddFreebie(true)">＋ Tambah file</button>
+            </div>
+            <p class="card-note">File ini ikut dikirim ke tiap klien. File biasa (zip, pdf, dll) dilampirkan. File Google (Sheets/Docs) dan folder dikirim sebagai link.</p>
+            <form id="addFreebieForm" class="add-row hidden" onsubmit="event.preventDefault(); addFreebie();">
+              <input id="freebieUrl" placeholder="Tempel link Google Drive file atau folder..." autocomplete="off" />
+              <button class="btn btn-sea btn-sm" id="addFreebieBtn" type="submit">Simpan</button>
+              <button class="btn btn-ghost btn-sm" type="button" onclick="toggleAddFreebie(false)">Batal</button>
+            </form>
+            <div id="freebieList" class="mini-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-head">
+              <h3 class="card-title">Siap dikirim</h3>
+              <button class="btn btn-sea btn-sm" onclick="openFreebie()">🎁 Kirim gratisan</button>
+            </div>
+            <p class="card-note">Klien yang udah ada email PT-nya tapi belum dapet gratisan.</p>
+            <div id="freebieReady" class="mini-list"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3 class="card-title">Riwayat terkirim</h3></div>
+          <div id="freebieSent" class="mini-list"></div>
+        </div>
+      </section>
+
+      <!-- Halaman: Catatan -->
+      <section id="pageCatatan" class="page hidden">
+        <div class="card">
+          <div class="toolbar">
+            <label class="search"><span>🔍</span><input id="qNotes" placeholder="Cari catatan..." oninput="renderNotes()" /></label>
+            <button class="btn btn-sea btn-sm" onclick="openNoteForm()">＋ Catatan</button>
+          </div>
+          <div class="grid2" id="noteList"></div>
+        </div>
+      </section>
+
+      <!-- Halaman: Arsip -->
+      <section id="pageArsip" class="page hidden">
+        <div class="card">
+          <p class="card-note" style="margin-top:0;">Kerjaan yang dihapus masuk ke sini dulu, jadi masih bisa dipulihkan kalau kepencet.</p>
+          <div class="list" id="archiveList"></div>
+        </div>
+      </section>
+    </main>
+  </div>
 </div>
 
 <!-- Modal: tambah / edit kerjaan -->
@@ -570,6 +706,51 @@
         <div class="out-head"><span>💬 WhatsApp</span><button class="ibtn" onclick="copyField('outWa')" title="Salin">⧉</button></div>
         <textarea id="outWa" class="out mono" readonly></textarea>
       </div>
+      <div class="next-step">
+        <div><b>Lanjut kirim gratisan?</b><br><span>Template & logo dikirim langsung ke email PT ini.</span></div>
+        <button class="btn btn-sea btn-sm" onclick="pelunasanToFreebie()">🎁 Kirim gratisan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: kirim gratisan -->
+<div id="mFree" class="overlay hidden" onclick="if(event.target===this) closeModal('mFree')">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-head">
+      <div><h2>🎁 Kirim gratisan</h2><p>Email langsung terkirim dari akun Google kamu ke email PT, lengkap dengan lampirannya.</p></div>
+      <button class="close" onclick="closeModal('mFree')">✕</button>
+    </div>
+    <div class="form">
+      <label class="field full">Klien
+        <select id="gNama" onchange="onFreeClient()"></select>
+      </label>
+      <label class="field full">Email PT (tujuan)
+        <input id="gTo" type="email" autocomplete="off" placeholder="email@perusahaan.co.id" />
+      </label>
+
+      <div class="section-label">Template gratisan</div>
+      <div class="full mini-list" id="gFiles"></div>
+
+      <div class="section-label">Logo klien</div>
+      <div class="full">
+        <label class="file-pick" for="gLogo">📎 Pilih file logo dari perangkat (PNG, JPG, SVG, PDF, ZIP)</label>
+        <input id="gLogo" type="file" multiple accept="image/*,.svg,.pdf,.zip,.ai,.eps,.cdr" class="hidden" onchange="onLogoPick(this)" />
+        <div id="gLogoList" class="mini-list" style="margin-top:8px;"></div>
+      </div>
+
+      <div class="section-label">Isi email</div>
+      <label class="field full">Subject
+        <input id="gSubject" autocomplete="off" />
+      </label>
+      <label class="field full">Isi
+        <textarea id="gBody" style="min-height:220px;" oninput="freeBodyDirty = true"></textarea>
+      </label>
+      <div id="gWarn" class="warn hidden"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('mFree')">Batal</button>
+      <button class="btn btn-sea" id="gSendBtn" onclick="sendFreebie()">Kirim sekarang</button>
     </div>
   </div>
 </div>
@@ -633,7 +814,7 @@ let jobs = [];
 let notes = null;
 let archive = null;
 let loaded = false;
-let tab = 'kerjaan';
+let tab = 'ringkasan';
 let quick = null;
 let statusChip = 'semua';
 let monthCursor = todayStr().slice(0,7);
@@ -820,8 +1001,8 @@ async function load(){
   const h = new Date().getHours();
   document.getElementById('greet').textContent =
     h < 11 ? 'Selamat pagi ☀️' : h < 15 ? 'Selamat siang 🌤️' : h < 18 ? 'Selamat sore 🌇' : 'Selamat malam 🌙';
-  document.getElementById('todayLabel').textContent =
-    new Date().toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('todayLabel').textContent = todayLong();
+  go((location.hash || '').replace('#','') || 'ringkasan', { keepScroll:true });
 
   document.getElementById('fJenisFilter').innerHTML =
     '<option value="semua">Semua jenis</option>' + JENIS.map(j=>`<option>${j}</option>`).join('');
@@ -851,6 +1032,7 @@ async function load(){
   // Siapin data tab lain di belakang layar biar pas dibuka langsung muncul.
   gsRun('api_listNotes').then(n=>{ notes = n || []; writeLocalCache(); if(tab==='catatan') renderNotes(); }).catch(()=>{});
   gsRun('api_listArchive').then(a=>{ archive = a || []; if(tab==='arsip') loadArchive(); }).catch(()=>{});
+  gsRun('api_listFreebies').then(f=>{ freebies = f || []; renderFreebieLists(); }).catch(()=>{ freebies = freebies || []; });
 }
 
 // Simpan ke server di belakang layar. Tampilan udah berubah duluan (gak nunggu server).
@@ -893,6 +1075,12 @@ function renderStats(){
   ['stHari','stBulan','stProses','stStuck'].forEach(id=>document.getElementById(id).classList.remove('active'));
   const map = { hariIni:'stHari', bulan:'stBulan', proses:'stProses', stuck:'stStuck' };
   if(quick) document.getElementById(map[quick]).classList.add('active');
+  const qc = document.getElementById('quickChip');
+  qc.classList.toggle('hidden', !quick);
+  if(quick) qc.textContent = `${QUICK_LABEL[quick]} ✕`;
+  updatePageHeader();
+  renderAttention();
+  renderFreebieLists();
 }
 
 function renderChart(){
@@ -943,9 +1131,11 @@ function shiftMonth(delta){
   if(quick==='bulan') renderJobs();
 }
 
-function setQuick(q){
-  quick = quick===q ? null : q;
-  if(tab!=='kerjaan') setTab('kerjaan');
+const QUICK_LABEL = { hariIni:'Selesai hari ini', bulan:'Selesai bulan ini', proses:'Sedang berjalan', stuck:'Nyangkut ≥ 7 hari' };
+// force=true: selalu pasang filter (gak toggle), dipakai tombol "Lihat semua".
+function setQuick(q, force){
+  quick = (!force && quick===q) ? null : q;
+  if(quick) go('kerjaan');
   renderStats();
   renderJobs();
 }
@@ -954,14 +1144,66 @@ function setStatusChip(s){
   document.querySelectorAll('#statusChips .chip').forEach(c=>c.classList.toggle('active', c.dataset.st===s));
   renderJobs();
 }
-function setTab(t){
-  tab = t;
-  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active', b.dataset.tab===t));
-  ['kerjaan','klien','catatan','arsip'].forEach(x=>{
-    document.getElementById('tab'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('hidden', x!==t);
+// ── Navigasi halaman (menu samping) ───────────────────────────────
+const PAGES = {
+  ringkasan: { title:'Ringkasan',  sub:()=>todayLong() },
+  kerjaan:   { title:'Kerjaan',    sub:()=>`${jobs.filter(j=>j.status==='proses').length} masih proses dari ${jobs.length} kerjaan` },
+  klien:     { title:'Klien',      sub:()=>`${clientGroups().length} klien tercatat` },
+  gratisan:  { title:'Gratisan',   sub:()=>'Kirim template & logo gratis ke email PT klien' },
+  catatan:   { title:'Catatan',    sub:()=>'NIK notaris, syarat PKP, dan catatan lainnya' },
+  arsip:     { title:'Arsip',      sub:()=>'Kerjaan yang dihapus, masih bisa dipulihkan' }
+};
+function todayLong(){ return new Date().toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' }); }
+
+function go(page, opts){
+  if(!PAGES[page]) page = 'ringkasan';
+  tab = page;
+  Object.keys(PAGES).forEach(p=>{
+    document.getElementById('page'+p.charAt(0).toUpperCase()+p.slice(1)).classList.toggle('hidden', p!==page);
   });
-  if(t==='catatan') loadNotes();
-  if(t==='arsip') loadArchive();
+  document.querySelectorAll('.nav-item[data-page]').forEach(b=>b.classList.toggle('active', b.dataset.page===page));
+  updatePageHeader();
+  toggleSide(false);
+  if(!(opts && opts.keepScroll)) window.scrollTo(0, 0);
+  try { if(location.hash !== '#'+page) history.replaceState(null, '', '#'+page); } catch(e){}
+  if(page==='catatan') loadNotes();
+  if(page==='arsip') loadArchive();
+  if(page==='gratisan') loadFreebies();
+  if(page==='ringkasan' && chart) setTimeout(()=>chart.resize(), 0);
+}
+function setTab(t){ go(t); } // nama lama
+
+function updatePageHeader(){
+  const p = PAGES[tab] || PAGES.ringkasan;
+  document.getElementById('pageTitle').textContent = p.title;
+  document.getElementById('pageSub').textContent = p.sub();
+  document.title = `${p.title} · Tracker Kerjaan`;
+}
+
+function toggleSide(open){
+  document.getElementById('appRoot').classList.toggle('side-open', !!open);
+}
+
+// Kartu ringkas "Perlu dicek" di halaman Ringkasan: yang nyangkut dulu, lalu proses paling lama.
+function renderAttention(){
+  const box = document.getElementById('attentionList');
+  if(!box || !loaded) return;
+  const list = jobs.filter(j=>j.status==='proses').sort((a,b)=>ageDays(b)-ageDays(a)).slice(0, 6);
+  if(!list.length){
+    box.innerHTML = '<div class="empty" style="padding:22px 6px;"><span class="empty-emoji">🎉</span>Gak ada kerjaan yang lagi jalan.</div>';
+    return;
+  }
+  box.innerHTML = list.map(j=>{
+    const age = ageDays(j), stuck = isStuck(j);
+    return `<div class="mini">
+      <div class="mini-ico" style="color:${stuck?'var(--hot)':'var(--wait)'};">${stuck?'🚨':'⏳'}</div>
+      <div class="mini-main">
+        <button class="mini-title" data-nama="${esc(j.nama)}" onclick="openClient(this.dataset.nama)">${esc(j.nama)}</button>
+        <div class="mini-sub">${esc(j.jenis)} · <span style="color:${stuck?'var(--hot)':'var(--wait)'}; font-weight:700;">${age} hari</span>${j.noted?' · '+esc(j.noted):''}</div>
+      </div>
+      <button class="ibtn" onclick="openJobForm('${j.id}')" title="Edit">✎</button>
+    </div>`;
+  }).join('');
 }
 
 function filteredJobs(){
@@ -1533,6 +1775,249 @@ function openGmail(){
   toast('Isi email udah disalin, tinggal paste (Ctrl+V) di Gmail');
 }
 
+// ── Gratisan: template + logo ke email PT ─────────────────────────
+let freebies = null;      // daftar file gratisan dari server
+let freeLogos = [];       // logo yang dipilih di form kirim: { name, mime, size, data }
+let freeBodyDirty = false;
+const LOGO_MAX_MB = 10, LOGO_TOTAL_MB = 15;
+
+async function loadFreebies(force){
+  if(freebies === null || force){
+    try { freebies = (await gsRun('api_listFreebies')) || []; }
+    catch(e){ if(freebies === null) freebies = []; toast('Gagal ambil daftar gratisan. Pastiin Code.gs udah versi terbaru.'); }
+  }
+  renderFreebieLists();
+}
+
+function fmtSize(b){
+  b = +b || 0;
+  return b >= 1048576 ? (b/1048576).toFixed(1).replace('.0','') + ' MB' : Math.max(1, Math.round(b/1024)) + ' KB';
+}
+function freebieIcon(f){
+  const m = String(f.mime || ''), n = String(f.name || '').toLowerCase();
+  if(f.kind === 'folder') return '📁';
+  if(m.includes('spreadsheet') || /\.(xlsx?|csv)$/.test(n)) return '📊';
+  if(m.includes('document') || /\.docx?$/.test(n)) return '📄';
+  if(m.includes('presentation')) return '📽️';
+  if(m.includes('zip') || /\.(zip|rar|7z)$/.test(n)) return '🗜️';
+  if(m.includes('pdf')) return '📕';
+  if(m.startsWith('image/')) return '🖼️';
+  return '📎';
+}
+function freebieDesc(f){
+  if(f.mode === 'attach') return `Dilampirkan · ${fmtSize(f.size)}`;
+  const base = f.kind === 'folder' ? 'Dikirim sebagai link folder' : (String(f.url).endsWith('/copy') ? 'Dikirim sebagai link "Buat salinan"' : 'Dikirim sebagai link');
+  return base + (f.shared ? '' : ' · <span class="warn-inline">⚠️ belum dibagikan, klien gak bisa buka</span>');
+}
+
+function readyClients(){
+  return clientGroups().filter(c=>firstFilled(c.jobs,'email') && !firstFilled(c.jobs,'gratisanAt'));
+}
+
+function renderFreebieLists(){
+  const cnt = document.getElementById('cGratisan');
+  if(cnt) cnt.textContent = credsLoaded ? readyClients().length : '…';
+  const fl = document.getElementById('freebieList');
+  if(!fl) return;
+
+  if(freebies === null){
+    fl.innerHTML = '<div class="skeleton" style="height:58px;"></div>';
+  } else if(!freebies.length){
+    fl.innerHTML = '<div class="empty" style="padding:22px 6px;"><span class="empty-emoji">🗜️</span>Belum ada file. Klik <b>＋ Tambah file</b>, lalu tempel link Drive file zip atau file template kamu.</div>';
+  } else {
+    fl.innerHTML = freebies.map(f=>`<div class="mini">
+      <div class="mini-ico">${freebieIcon(f)}</div>
+      <div class="mini-main">
+        <div class="mini-title">${esc(f.name)}</div>
+        <div class="mini-sub" style="white-space:normal;">${freebieDesc(f)}</div>
+      </div>
+      <a class="ibtn" href="${esc(f.url)}" target="_blank" rel="noopener" title="Buka di Drive" style="text-decoration:none;">↗</a>
+      <button class="ibtn" data-id="${esc(f.id)}" onclick="removeFreebie(this.dataset.id)" title="Hapus dari daftar">🗑</button>
+    </div>`).join('');
+  }
+
+  const rd = document.getElementById('freebieReady');
+  if(!credsLoaded){
+    rd.innerHTML = '<div class="skeleton" style="height:58px;"></div>';
+  } else {
+    const ready = readyClients();
+    rd.innerHTML = ready.length ? ready.map(c=>`<div class="mini">
+      <div class="mini-ico">🏢</div>
+      <div class="mini-main">
+        <button class="mini-title" data-nama="${esc(c.nama)}" onclick="openClient(this.dataset.nama)">${esc(c.nama)}</button>
+        <div class="mini-sub">${esc(firstFilled(c.jobs,'email'))}</div>
+      </div>
+      <button class="btn btn-soft btn-sm" data-nama="${esc(c.nama)}" onclick="openFreebie(this.dataset.nama)">Kirim</button>
+    </div>`).join('') : '<div class="empty" style="padding:22px 6px;"><span class="empty-emoji">✨</span>Semua klien yang udah ada emailnya udah dikirimin.</div>';
+  }
+
+  const sent = clientGroups().filter(c=>firstFilled(c.jobs,'gratisanAt'))
+    .sort((a,b)=>String(firstFilled(b.jobs,'gratisanAt')).localeCompare(String(firstFilled(a.jobs,'gratisanAt'))));
+  document.getElementById('freebieSent').innerHTML = sent.length ? sent.map(c=>`<div class="mini">
+      <div class="mini-ico">✅</div>
+      <div class="mini-main">
+        <button class="mini-title" data-nama="${esc(c.nama)}" onclick="openClient(this.dataset.nama)">${esc(c.nama)}</button>
+        <div class="mini-sub">Terkirim ${esc(firstFilled(c.jobs,'gratisanAt'))}${firstFilled(c.jobs,'gratisanTo') ? ' ke '+esc(firstFilled(c.jobs,'gratisanTo')) : ''}</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" data-nama="${esc(c.nama)}" onclick="openFreebie(this.dataset.nama)">Kirim lagi</button>
+    </div>`).join('') : '<div class="empty" style="padding:22px 6px;">Belum ada gratisan yang dikirim.</div>';
+}
+
+function toggleAddFreebie(open){
+  document.getElementById('addFreebieForm').classList.toggle('hidden', !open);
+  if(open){ setVal('freebieUrl',''); setTimeout(()=>document.getElementById('freebieUrl').focus(), 50); }
+}
+
+async function addFreebie(){
+  const url = getVal('freebieUrl');
+  if(!url) return;
+  const btn = document.getElementById('addFreebieBtn');
+  btn.disabled = true; btn.textContent = 'Ngecek file…';
+  try {
+    freebies = (await gsRun('api_addFreebie', url)) || [];
+    toggleAddFreebie(false);
+    renderFreebieLists();
+    const f = freebies[freebies.length-1];
+    toast(f && f.mode==='link' && !f.shared ? 'Ditambah, tapi file-nya belum dibagikan. Ubah akses di Drive jadi "Siapa saja yang punya link".' : 'File gratisan ditambah ✅');
+  } catch(e){ toast(e.message || 'Gagal nambah file'); }
+  finally { btn.disabled = false; btn.textContent = 'Simpan'; }
+}
+
+async function removeFreebie(id){
+  try {
+    freebies = (await gsRun('api_removeFreebie', id)) || [];
+    renderFreebieLists();
+    toast('Dihapus dari daftar (file di Drive tetap aman)');
+  } catch(e){ toast('Gagal menghapus'); }
+}
+
+function pelunasanToFreebie(){
+  const nama = document.getElementById('pNama').value;
+  closeModal('mPel');
+  openFreebie(nama);
+}
+
+async function openFreebie(nama){
+  if(freebies === null) await loadFreebies();
+  const groups = clientGroups().slice().sort((a,b)=>a.nama.localeCompare(b.nama));
+  if(!groups.length){ toast('Belum ada klien.'); return; }
+  const pick = (nama && groups.find(g=>g.key===norm(nama))) || readyClients()[0] || groups[0];
+  document.getElementById('gNama').innerHTML = groups.map(c=>`<option value="${esc(c.nama)}">${esc(c.nama)}</option>`).join('');
+  setVal('gNama', pick.nama);
+  onFreeClient();
+  openModal('mFree');
+}
+
+function onFreeClient(){
+  const c = clientGroups().find(g=>g.key===norm(document.getElementById('gNama').value));
+  if(!c) return;
+  setVal('gTo', firstFilled(c.jobs,'email'));
+  setVal('gSubject', `Bonus Gratis untuk ${c.nama}`);
+  freeLogos = [];
+  freeBodyDirty = false;
+  const box = document.getElementById('gFiles');
+  box.innerHTML = (freebies||[]).length ? freebies.map(f=>`<label class="check-row">
+      <input type="checkbox" class="gFile" value="${esc(f.id)}" checked onchange="buildFreeBody()" />
+      <span>${freebieIcon(f)} ${esc(f.name)}</span>
+      <span class="muted">${f.mode==='attach' ? fmtSize(f.size) : 'link'}</span>
+    </label>`).join('') : '<div style="font-size:12.5px; color:var(--muted);">Belum ada file gratisan. Tambah dulu di halaman Gratisan.</div>';
+  renderLogoList();
+  buildFreeBody();
+
+  const warn = document.getElementById('gWarn');
+  const sent = firstFilled(c.jobs,'gratisanAt');
+  const msgs = [];
+  if(!credsLoaded) msgs.push('Email PT lagi ditarik dari server, tunggu sebentar atau isi manual.');
+  else if(!getVal('gTo')) msgs.push('Klien ini belum punya email PT. Isi emailnya dulu.');
+  if(sent) msgs.push(`Klien ini udah pernah dikirimin gratisan (${esc(sent)}).`);
+  (freebies||[]).filter(f=>f.mode==='link' && !f.shared).forEach(f=>msgs.push(`"${esc(f.name)}" belum dibagikan publik di Drive, klien gak bakal bisa buka link-nya.`));
+  warn.innerHTML = msgs.map(m=>'⚠️ '+m).join('<br>');
+  warn.classList.toggle('hidden', !msgs.length);
+}
+
+function selectedFreebies(){
+  const ids = [...document.querySelectorAll('.gFile:checked')].map(x=>x.value);
+  return (freebies||[]).filter(f=>ids.includes(f.id));
+}
+
+function buildFreeBody(){
+  if(freeBodyDirty) return;
+  const nama = document.getElementById('gNama').value;
+  const items = [];
+  if(freeLogos.length) items.push('• Logo perusahaan (terlampir)');
+  selectedFreebies().forEach(f=>{
+    items.push(f.mode==='attach' ? `• ${f.name} (terlampir)` : `• ${f.name}: ${f.url}`);
+  });
+  setVal('gBody', `Dear ${nama},
+
+Terima kasih sudah mempercayakan pengurusan legalitas perusahaan kepada kami. Sebagai bonus, berikut kami kirimkan secara gratis:
+
+${items.join('\n') || '• (pilih lampiran dulu)'}
+
+Semoga bermanfaat untuk ${nama}.
+Terima Kasih`);
+}
+
+function renderLogoList(){
+  document.getElementById('gLogoList').innerHTML = freeLogos.map((l,i)=>`<div class="mini">
+    <div class="mini-ico">🖼️</div>
+    <div class="mini-main"><div class="mini-title">${esc(l.name)}</div><div class="mini-sub">${fmtSize(l.size)}</div></div>
+    <button class="ibtn" onclick="freeLogos.splice(${i},1); renderLogoList(); buildFreeBody();" title="Hapus">✕</button>
+  </div>`).join('');
+}
+
+function onLogoPick(input){
+  const files = [...input.files];
+  input.value = '';
+  let total = freeLogos.reduce((a,l)=>a+l.size, 0);
+  files.forEach(file=>{
+    if(file.size > LOGO_MAX_MB*1048576){ toast(`${file.name} kegedean (maks ${LOGO_MAX_MB} MB per file)`); return; }
+    if(total + file.size > LOGO_TOTAL_MB*1048576){ toast(`Total logo maksimal ${LOGO_TOTAL_MB} MB`); return; }
+    total += file.size;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+      freeLogos.push({ name: file.name, mime: file.type || 'application/octet-stream', size: file.size, data: String(reader.result).split(',')[1] || '' });
+      renderLogoList();
+      buildFreeBody();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function sendFreebie(){
+  const nama = document.getElementById('gNama').value;
+  const to = getVal('gTo');
+  const subject = getVal('gSubject');
+  const files = selectedFreebies();
+  if(!/^[^\s@,;]+@[^\s@,;]+\.[^\s@,;]+$/.test(to)){ toast('Email PT-nya belum bener'); return; }
+  if(!files.length && !freeLogos.length){ toast('Pilih minimal satu template atau logo'); return; }
+  if(!subject){ toast('Subject masih kosong'); return; }
+
+  const btn = document.getElementById('gSendBtn');
+  btn.disabled = true; btn.textContent = 'Mengirim…';
+  setSync(1);
+  try {
+    const res = await gsRun('api_sendFreebie', {
+      nama, to, subject,
+      body: document.getElementById('gBody').value,
+      freebieIds: files.map(f=>f.id),
+      logos: freeLogos.map(l=>({ name:l.name, mime:l.mime, data:l.data }))
+    });
+    if(Array.isArray(res)){ jobs = res; credsLoaded = true; }
+    freeLogos = [];
+    closeModal('mFree');
+    renderAll();
+    writeLocalCache();
+    toast(`Gratisan terkirim ke ${to} ✅`);
+  } catch(e){
+    const m = e && e.message ? e.message : 'coba lagi';
+    toast(m==='LAMPIRAN_KEGEDEAN' ? 'Total lampiran lebih dari 24 MB. Kurangi logo, atau jadikan file zip-nya link.' : 'Gagal kirim: ' + m);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Kirim sekarang';
+    setSync(-1);
+  }
+}
+
 // ── Keamanan: daftar perangkat login ──────────────────────────────
 function openSecurity(){
   let weak = false;
@@ -1647,7 +2132,13 @@ async function deleteNote(){
 
 window.addEventListener('load', ()=>{ if(loaded) renderChart(); });
 
+window.addEventListener('hashchange', ()=>{
+  const p = (location.hash || '').replace('#','');
+  if(p && p !== tab && PAGES[p] && getToken()) go(p);
+});
+
 document.addEventListener('keydown', e=>{
+  if(e.key==='Escape') toggleSide(false);
   if(e.key==='Escape') document.querySelectorAll('.overlay:not(.hidden)').forEach(o=>o.classList.add('hidden'));
 });
 
